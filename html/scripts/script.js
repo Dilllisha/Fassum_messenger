@@ -88,4 +88,79 @@ document.addEventListener('DOMContentLoaded', () => {
     // Вычисляем высоту при загрузке и изменении размера окна
     fixViewportHeight();
     window.addEventListener('resize', fixViewportHeight);
+
+    // 5. Отслеживание «прилипания» шапки
+    const initStickyHeader = () => {
+        const header = document.querySelector('.head_container');
+        const startContainer = document.querySelector('.start_container');
+
+        if (!header || !startContainer) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            // entries[0].isIntersecting означает "виден ли сейчас start_container"
+            if (!entries[0].isIntersecting) {
+                // Первый блок ушел из зоны видимости -> шапка прилипла
+                header.classList.add('is-fixed');
+            } else {
+                // Мы вернулись наверх -> возвращаем шапке исходный вид
+                header.classList.remove('is-fixed');
+            }
+        }, {
+            threshold: 0 // Срабатывает ровно в тот момент, когда блок исчезает/появляется
+        });
+
+        observer.observe(startContainer);
+    };
+
+    // ... вызовы других функций ...
+    initStickyHeader(); // Добавь вызов сюда
+// 6. Прыжок (Snap) при скролле первого экрана (Финальная версия)
+    const initHeroSnapScroll = () => {
+        const startContainer = document.querySelector('.start_container');
+        const header = document.querySelector('.head_container');
+        
+        if (!startContainer || !header) return;
+
+        let isAnimating = false;
+
+        window.addEventListener('wheel', (e) => {
+            // Если мы уже летим к блоку, жестко блокируем ВСЕ новые сигналы от мыши/тачпада
+            if (isAnimating) {
+                e.preventDefault();
+                return;
+            }
+
+            const scrollY = window.scrollY;
+            const heroHeight = startContainer.offsetHeight;
+            
+            // Четко определяем направление движения
+            const isScrollingDown = e.deltaY > 0;
+            const isScrollingUp = e.deltaY < 0;
+
+            // ЗОНА 1: Мы где-то на первом экране и крутим ВНИЗ
+            // Берем с запасом (heroHeight - 50), чтобы скрипт не промахнулся
+            if (scrollY < (heroHeight - 50) && isScrollingDown) {
+                e.preventDefault();
+                isAnimating = true;
+                
+                header.scrollIntoView({ behavior: 'smooth' });
+                
+                // Пауза 1 секунда, пока страница плавно едет
+                setTimeout(() => { isAnimating = false; }, 1000);
+            } 
+            // ЗОНА 2: Мы стоим у шапки (или чуть ниже) и крутим ВВЕРХ
+            // Захватываем широкое окно: от 50px ниже шапки до 50px выше нее
+            else if (scrollY >= (heroHeight - 50) && scrollY <= (heroHeight + 50) && isScrollingUp) {
+                e.preventDefault();
+                isAnimating = true;
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                setTimeout(() => { isAnimating = false; }, 1000);
+            }
+        }, { passive: false });
+    };
+
+    // ВОТ ЭТА СТРОЧКА БЫЛА ПРОПУЩЕНА! Вызываем функцию:
+    initHeroSnapScroll();
 });

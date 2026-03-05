@@ -22,17 +22,16 @@
 }
 
 html {
-    scroll-behavior: smooth; /* Плавный скролл по якорным ссылкам */
-    overflow-x: hidden;
+    scroll-behavior: smooth;
+    /* Убрали overflow-x: hidden; */
 }
 
 body {
     background: black;
     color: white;
-    overflow-x: hidden;
     width: 100%;
     position: relative;
-    /* Убрали жесткий scroll-snap, чтобы страница скроллилась естественно */
+    /* Убрали overflow-x: hidden; */
 }
 
 p {
@@ -162,15 +161,21 @@ p {
 .head_container {
     width: 100%;
     height: 70px;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.8); /* Сделаем её изначально чуть прозрачнее */
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 100;
-    /* Нативная фиксация при скролле: */
     position: sticky; 
     top: 0;
     user-select: none;
+    transition: background 0.3s ease, box-shadow 0.3s ease; /* Плавный переход */
+}
+
+.head_container.is-fixed {
+    background: rgba(0, 0, 0, 0.98); /* Становится плотнее */
+    box-shadow: 0 4px 20px rgba(0, 210, 255, 0.15); /* Добавляем легкое синее свечение */
+    border-bottom-color: rgba(0, 210, 255, 0.2);
 }
 
 .navbar {
@@ -263,11 +268,12 @@ p {
 }
 
 /* =========================================
-   4. СЕКЦИЯ ЗАГРУЗКИ
+   4. СЕКЦИЯ ЗАГРУЗКИ (ОБНОВЛЕННАЯ)
    ========================================= */
 .download-section {
-    padding: 100px 0;
-    background: linear-gradient(135deg, #0a1928 0%, #0c1f33 100%);
+    padding: 120px 0;
+    /* Убедимся, что градиент течет непрерывно от previous block */
+    background: linear-gradient(to bottom, #0a1928 0%, #0c1f33 100%);
     min-height: 100vh;
 }
 
@@ -279,103 +285,241 @@ p {
 
 .download-section h2 {
     text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: white;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .section-subtitle {
     text-align: center;
     color: #a0aec0;
-    font-size: 1.2rem;
-    margin-bottom: 3rem;
+    font-size: 1.3rem;
+    margin-bottom: 5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .download-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 3rem;
 }
 
 .download-card {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(8px);
-    border-radius: 16px;
-    padding: 2rem;
+    /* Сильный Glassmorphism эффект */
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    
+    border-radius: 20px;
+    padding: 3rem 2rem;
     text-align: center;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Плавный отскок */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
     align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Мягкие цветовые отсветы для каждой OS при наведении */
 .download-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-10px) scale(1.02);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
 }
 
+.windows:hover {
+    border-color: rgba(0, 120, 214, 0.4);
+    box-shadow: 0 15px 40px rgba(0, 120, 214, 0.2);
+}
+
+.linux:hover {
+    border-color: rgba(252, 202, 3, 0.4);
+    box-shadow: 0 15px 40px rgba(252, 202, 3, 0.2);
+}
+
+.android:hover {
+    border-color: rgba(61, 220, 132, 0.4);
+    box-shadow: 0 15px 40px rgba(61, 220, 132, 0.2);
+}
+
+/* Иконка в светящемся круге */
 .os-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    display: inline-flex;
+    font-size: 3.5rem;
+    margin-bottom: 2rem;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    transition: transform 0.3s;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    transition: transform 0.4s ease;
+}
+
+/* Добавляем мягкое свечение позади иконок */
+.os-icon::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+    z-index: -1;
+    opacity: 0.5;
+    transition: opacity 0.4s ease;
 }
 
 .download-card:hover .os-icon {
     transform: scale(1.1);
 }
 
-.windows { color: #0078d6; border: 2px solid rgba(0, 120, 214, 0.3); }
-.linux { color: #fcca03; border: 2px solid rgba(252, 202, 3, 0.3); }
-.android { color: #3ddc84; border: 2px solid rgba(61, 220, 132, 0.3); }
-
-.download-card h3 {
-    margin: 1rem 0 0.5rem;
-    font-size: 1.5rem;
-    font-weight: 600;
+.download-card:hover .os-icon::after {
+    opacity: 1;
 }
 
+.windows .os-icon {
+    color: #0078d6;
+    background: rgba(0, 120, 214, 0.1);
+    border: 2px solid rgba(0, 120, 214, 0.3);
+}
+
+.linux .os-icon {
+    color: #fcca03;
+    background: rgba(252, 202, 3, 0.1);
+    border: 2px solid rgba(252, 202, 3, 0.3);
+}
+
+.android .os-icon {
+    color: #3ddc84;
+    background: rgba(61, 220, 132, 0.1);
+    border: 2px solid rgba(61, 220, 132, 0.3);
+}
+
+.download-card h3 {
+    margin: 1.5rem 0 0.8rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.2px;
+}
+
+.download-card > p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+}
+
+/* Элегантный список требований */
 .requirements {
     list-style: none;
-    margin: 1rem 0 2rem 0;
+    margin: 1.5rem 0 2.5rem 0;
     width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 1.5rem;
+    font-family: 'Forum', serif; /* Возвращаемся к Forum для контраста */
 }
 
 .requirements li {
-    padding: 0.4rem 0;
+    padding: 0.6rem 0;
     color: #a0aec0;
-    font-size: 0.9rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    position: relative;
+    padding-left: 20px;
 }
 
+.requirements li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: rgba(255, 255, 255, 0.3);
+    transition: color 0.3s ease;
+}
+
+.download-card:hover .requirements li::before {
+    color: rgba(0, 210, 255, 0.6);
+}
+
+/* Единые стили для всех кнопок скачивания */
 .download-btn {
-    display: inline-flex;
+    display: flex;
     width: 100%;
-    background: #00d2ff;
-    color: black;
-    padding: 12px 24px;
-    border-radius: 8px;
+    height: 54px; /* Фиксированная высота гарантирует одинаковый размер */
+    padding: 0 24px;
+    border-radius: 12px;
     font-weight: 600;
-    transition: all 0.3s;
-    margin-top: 0.8rem;
-    border: none;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    
+    /* Спокойный стеклянный дизайн по умолчанию */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
     cursor: pointer;
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    backdrop-filter: blur(5px);
+}
+
+/* Фирменный акцент Fassum при наведении */
+.download-btn:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 8px 25px rgba(0, 210, 255, 0.35);
+}
+
+.download-card:hover .download-btn {
+    box-shadow: 0 6px 20px rgba(0, 210, 255, 0.2);
+}
+
+.windows-btn {
+    background: linear-gradient(135deg, #00d2ff 0%, #0078d6 100%);
+    color: white;
+}
+
+.linux-btn {
+    background: linear-gradient(135deg, #fcca03 0%, #f3a801 100%);
+    color: black;
+}
+
+.android-btn {
+    background: linear-gradient(135deg, #3ddc84 0%, #00b0ff 100%);
+    color: white;
+}
+
+.ios-btn {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    margin-top: 1.2rem;
 }
 
 .download-btn:hover {
-    background: #3a7bd5;
+    transform: translateY(-4px) scale(1.02);
+}
+
+.windows-btn:hover { background: linear-gradient(135deg, #33e1ff 0%, #0088ff 100%); }
+.linux-btn:hover { background: linear-gradient(135deg, #ffe066 0%, #fdb900 100%); }
+.android-btn:hover { background: linear-gradient(135deg, #66ffbb 0%, #33ccff 100%); }
+.ios-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
     color: white;
-    transform: translateY(-2px);
 }
 
 /* =========================================
@@ -616,4 +760,81 @@ p {
     line-height: 1.6;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 0.95rem;
+}
+
+/* =========================================
+   8. СЕКЦИЯ КАК РАБОТАЕТ (HOW IT WORKS)
+   ========================================= */
+.how-it-works-section {
+    padding: 100px 0;
+    /* Делаем плавный градиент от черного фона Features к синему фону Download */
+    background: linear-gradient(to bottom, #000000 0%, #0a1928 100%);
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+    margin-top: 3rem;
+    position: relative;
+    z-index: 1;
+}
+
+.step-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden; /* Чтобы огромные цифры не вылезали за края */
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(0, 210, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Стили для фоновых цифр */
+.step-number {
+    position: absolute;
+    top: -20px;
+    right: 10px;
+    font-size: 7rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.03);
+    z-index: -1;
+    transition: all 0.3s ease;
+    pointer-events: none; /* Чтобы цифра не мешала выделять текст */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.step-card:hover .step-number {
+    color: rgba(0, 210, 255, 0.08);
+    transform: scale(1.05);
+}
+
+.step-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: white;
+    font-weight: 600;
+    margin-top: auto; /* Прижимает текст ближе к центру, если карточки разной высоты */
+}
+
+.step-card p {
+    color: #a0aec0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (max-width: 768px) {
+    .how-it-works-section {
+        padding: 60px 0;
+    }
 }
