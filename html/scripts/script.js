@@ -119,5 +119,77 @@ document.addEventListener('DOMContentLoaded', () => {
       // Инициализируем скролл в начало
       pageWrapper.scrollTo({ top: 0, behavior: 'auto' });
     }
-  });
+});
+
+
+
+function fixViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
   
+// Инициализация при загрузке
+fixViewportHeight();
+  
+// Перерасчёт при resize и load
+window.addEventListener('resize', fixViewportHeight);
+window.addEventListener('load', fixViewportHeight);
+
+
+let lastWidth = window.innerWidth;
+
+function monitorWidth() {
+  const currentWidth = window.innerWidth;
+  if (Math.abs(currentWidth - lastWidth) > 5) {
+    console.warn('Ширина изменилась:', lastWidth, '→', currentWidth);
+    lastWidth = currentWidth;
+    // Принудительная коррекция
+    document.body.style.width = '100%';
+    document.documentElement.style.width = '100%';
+  }
+}
+
+setInterval(monitorWidth, 100);
+
+let lastY = 0;
+let deltaY = 0;
+let isScrolling = false;
+const sections = document.querySelectorAll('.section');
+const sectionHeights = Array.from(sections).map(el => el.offsetTop);
+
+window.addEventListener('wheel', (e) => {
+  const currentY = window.scrollY;
+  deltaY = currentY - lastY;
+  lastY = currentY;
+
+  // Определяем «силу» скролла (например, > 100px за раз — сильный)
+  if (Math.abs(deltaY) > 100 && !isScrolling) {
+    isScrolling = true;
+    requestAnimationFrame(scrollToNextSection);
+  }
+});
+
+function scrollToNextSection() {
+  const currentSectionIndex = getCurrentSectionIndex();
+  const nextIndex = currentSectionIndex + (deltaY > 0 ? 1 : -1);
+
+  if (nextIndex >= 0 && nextIndex < sections.length) {
+    sections[nextIndex].scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+
+  // Сброс флага через анимацию
+  setTimeout(() => {
+    isScrolling = false;
+  }, 1000); // время анимации прокрутки
+}
+
+function getCurrentSectionIndex() {
+  const scrollY = window.scrollY;
+  for (let i = 0; i < sectionHeights.length; i++) {
+    if (scrollY < sectionHeights[i]) return i;
+  }
+  return sectionHeights.length - 1;
+}
