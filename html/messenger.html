@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fassum Web</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/messenger_style.css">
+</head>
+<body class="web-app-body">
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <header class="sidebar-header">
+                <div class="user-profile">
+                    <div class="avatar-circle">U</div>
+                    <span class="username">Мой профиль</span>
+                </div>
+                <button class="settings-btn" aria-label="Настройки">⚙️</button>
+            </header>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Поиск контактов...">
+            </div>
+
+            <div class="chats-list">
+                <div class="chat-item active">
+                    <div class="avatar-circle">A</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Алексей</div>
+                        <div class="last-message">Привет! Ты видел обновление?</div>
+                    </div>
+                    <div class="chat-meta">
+                        <span class="time">14:20</span>
+                        <span class="unread-count">2</span>
+                    </div>
+                </div>
+
+                <div class="chat-item">
+                    <div class="avatar-circle">K</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Команда Fassum</div>
+                        <div class="last-message">Новые сервера запущены 🚀</div>
+                    </div>
+                    <div class="chat-meta">
+                        <span class="time">12:05</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="chat-window">
+            <header class="chat-header">
+                <div class="chat-header-info">
+                    <div class="avatar-circle">A</div>
+                    <div>
+                        <div class="chat-name">Алексей</div>
+                        <div class="status online">в сети</div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button>📞</button>
+                    <button>📎</button>
+                    <button>⋮</button>
+                </div>
+            </header>
+
+            <section class="messages-container">
+                <div class="message incoming">
+                    <div class="message-text">Слушай, а Fassum реально работает быстрее других мессенджеров?</div>
+                    <div class="message-time">14:18</div>
+                </div>
+
+                <div class="message outgoing">
+                    <div class="message-text">Да, благодаря оптимизированному протоколу доставка мгновенная! ⚡</div>
+                    <div class="message-time">14:20</div>
+                </div>
+            </section>
+
+            <footer class="input-area">
+                <button class="emoji-btn">😊</button>
+                <input type="text" placeholder="Напишите сообщение...">
+                <button class="send-btn">➔</button>
+            </footer>
+        </main>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,252 @@
+/* =========================================
+   1. ОБЩИЕ НАСТРОЙКИ ПРИЛОЖЕНИЯ
+   ========================================= */
+.web-app-body {
+    background: radial-gradient(circle at center, #064369 0%, #000000 100%); /* В стиле Hero-блока */
+    height: 100vh;
+    overflow: hidden; /* Отключаем скролл всей страницы */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-container {
+    width: 95vw;
+    height: 90vh;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================================
+   2. БОКОВАЯ ПАНЕЛЬ (SIDEBAR)
+   ========================================= */
+.sidebar {
+    width: 350px;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); /* Фирменный градиент */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+
+.username {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.search-bar {
+    padding: 15px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: white;
+    outline: none;
+}
+
+.chats-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.chat-item {
+    display: flex;
+    padding: 15px 20px;
+    gap: 15px;
+    cursor: pointer;
+    transition: background 0.3s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.chat-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.chat-item.active {
+    background: rgba(0, 210, 255, 0.1);
+    border-left: 3px solid #00d2ff;
+}
+
+.chat-info {
+    flex: 1;
+}
+
+.chat-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.last-message {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+.chat-meta {
+    text-align: right;
+    font-size: 0.75rem;
+}
+
+.unread-count {
+    background: #00d2ff;
+    color: black;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+/* =========================================
+   3. ОКНО ЧАТА (CHAT WINDOW)
+   ========================================= */
+.chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chat-header-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.status.online {
+    color: #3ddc84;
+    font-size: 0.8rem;
+}
+
+.header-actions button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    margin-left: 15px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.messages-container {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Стили сообщений */
+.message {
+    max-width: 60%;
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    position: relative;
+}
+
+.message.incoming {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.08);
+    border-bottom-left-radius: 4px;
+}
+
+.message.outgoing {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); /* Тот же градиент, что и у кнопок */
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.message-time {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* =========================================
+   4. ОБЛАСТЬ ВВОДА (INPUT AREA)
+   ========================================= */
+.input-area {
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.input-area input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 20px;
+    border-radius: 25px;
+    color: white;
+    outline: none;
+}
+
+.input-area button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    transition: transform 0.2s;
+}
+
+.send-btn {
+    color: #00d2ff;
+}
+
+.input-area button:hover {
+    transform: scale(1.1);
+}
