@@ -85,8 +85,8 @@ body {
 }
   
 @keyframes snow {
-	0% { background-position: 0px 0px, 0px 0px, 0px 0px; }
-	100% { background-position: 500px 1000px, 400px 400px, 300px 300px; }
+	0% { background-position: 0px 0px, 0px 0px, 0px 0px;}
+	100% { background-position: 500px 1000px, 400px 400px, 300px 300px;}
 }
   
 .start_container .flying-text {
@@ -103,10 +103,10 @@ body {
 }
   
 @keyframes fly {
-	0% { opacity: 0; transform: translate(0, 0) rotate(0deg); }
-	10% { opacity: 0.8; }
-	90% { opacity: 0.8; }
-	100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(var(--r)); }
+	0% { opacity: 0; transform: translate(0, 0) rotate(0deg);}
+	10% { opacity: 0.8;}
+	90% { opacity: 0.8;}
+	100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(var(--r));}
 }
 
 .hero_content {
@@ -225,8 +225,8 @@ body {
 
 
 @keyframes snow {
-	0% { background-position: 0 0, 0 0, 0 0; }
-	100% { background-position: 200px 400px, 160px 160px, 120px 120px; } /* Уменьшили смещение */
+	0% { background-position: 0 0, 0 0, 0 0;}
+	100% { background-position: 200px 400px, 160px 160px, 120px 120px;} /* Уменьшили смещение */
 }
   
 #snow {
@@ -250,14 +250,354 @@ body {
 .container {
 	overflow: auto; /* Включаем прокрутку */
 
-  }
+}
 
-  .section {
-	height: 100vh; /* высота блока = высота экрана */
+.section {
+	height: fit-content; /* высота блока = высота экрана */
 	scroll-snap-align: start; /* блок «прилипает» к началу viewport */
-  }
+	background-color: white;
+}
   
   body {
 	overflow-y: scroll;
 	scroll-snap-type: y mandatory; /* принудительный snap по вертикали */
+}
+
+.head_container {
+	width: 100%;
+	height: 70px;
+	background: rgba(0, 0, 0, 0.9);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	transition: all 0.3s ease;
+	z-index: 100;
+	position: relative;
+}
+  
+.head_container.fixed {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	background: rgba(0, 0, 0, 0.95);
+}
+  
+.navbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem 5%;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+  
+  /* Логотип */
+.head-logo {
+	font-size: 24px;
+	font-weight: 800;
+	background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    background-clip: border-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+  
+.head-logo-icon {
+	font-size: 28px;
+}
+  
+  /* Меню навигации */
+.nav-menu {
+	display: flex;
+	list-style: none;
+	gap: 2rem;
+}
+  
+.nav-menu a {
+	color: rgba(255, 255, 255, 0.8);
+	text-decoration: none;
+	font-weight: 500;
+	transition: color 0.3s;
+	font-size: 16px;
+}
+  
+.nav-menu a:hover {
+	color: #00d2ff;
+}
+  
+  /* Кнопки авторизации */
+.auth-buttons {
+	display: flex;
+	gap: 1rem;
+}
+  
+.btn-login,.btn-signup {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 6px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+  
+.btn-login {
+	background: transparent;
+	color: white;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+  
+.btn-signup {
+	background: #00d2ff;
+	color: black;
+}
+  
+.btn-login:hover {
+	border-color: #00d2ff;
+	color: #00d2ff;
+}
+  
+.btn-signup:hover {
+	background: #3a7bd5;
+	transform: translateY(-2px);
+}
+  
+  /* Гамбургер-меню для мобильных */
+.hamburger-menu {
+	display: none;
+	background: none;
+	border: none;
+	color: white;
+	font-size: 24px;
+	cursor: pointer;
+}
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+	.nav-menu,.auth-buttons {
+	  display: none;
+	}
+	.hamburger-menu {
+	  display: block;
+	}
+}
+
+.head_container * {
+	-webkit-user-select: none; /* Chrome, Safari, Opera */
+	-khtml-user-select: none;  /* Konqueror HTML */
+	-moz-user-select: none;    /* Firefox */
+	-ms-user-select: none;     /* Internet Explorer / Edge */
+	user-select: none;        /* Стандартное свойство */
+}
+
+.download-section {
+	padding: 80px 0;
+	background: linear-gradient(135deg, #0a1928 0%, #0c1f33 100%);
+	color: white;
+  }
+  
+  .container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
+  }
+  
+  .download-section h2 {
+	text-align: center;
+	font-size: 2.5rem;
+	margin-bottom: 1rem;
+  }
+  
+  .section-subtitle {
+	text-align: center;
+	color: #a0aec0;
+	font-size: 1.2rem;
+	margin-bottom: 3rem;
+  }
+  
+  .download-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 2rem;
+	margin-bottom: 4rem;
+  }
+  
+  /* Единые стили для всех карточек */
+  .download-card {
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(8px);
+	border-radius: 16px;
+	padding: 2rem;
+	text-align: center;
+	transition: all 0.3s ease;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	position: relative;
+	overflow: hidden;
+	margin-top: 10px;
+  }
+  
+  .download-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+	background: rgba(255, 255, 255, 0.12);
+  }
+  
+  /* Иконки ОС с унифицированным стилем */
+  .os-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.1);
+	transition: transform 0.3s;
+  }
+  
+  .download-card:hover .os-icon {
+	transform: scale(1.1);
+  }
+  
+  /* Цветовые акценты для каждой ОС */
+  .windows {
+	color: #0078d6;
+	border: 2px solid rgba(0, 120, 214, 0.3);
+  }
+  
+  .linux {
+	color: #fcca03;
+	border: 2px solid rgba(252, 202, 3, 0.3);
+  }
+  
+  .android {
+	color: #3ddc84;
+	border: 2px solid rgba(61, 220, 132, 0.3);
+  }
+  
+  /* Заголовки карточек */
+  .download-card h3 {
+	margin: 1rem 0 0.5rem;
+	font-size: 1.5rem;
+	font-weight: 600;
+  }
+  
+  /* Требования */
+  .requirements {
+	list-style: none;
+	padding: 0;
+	margin: 1rem 0;
+  }
+  
+  .requirements li {
+	padding: 0.4rem 0;
+	color: #a0aec0;
+	text-align: left;
+	font-size: 0.9rem;
+  }
+  
+  /* Основные кнопки загрузки — единый стиль */
+  .download-btn {
+	display: inline-block;
+	min-width: 200px;
+	background: #00d2ff;
+	color: black;
+	padding: 12px 24px;
+	text-decoration: none;
+	border-radius: 8px;
+	font-weight: 600;
+	transition: all 0.3s;
+	margin-top: 0.8rem;
+	border: none;
+	cursor: pointer;
+	gap: 0.7rem;
+	align-items: center;
+	justify-content: center;
+  }
+  
+  .download-btn:hover {
+	background: #3a7bd5;
+	transform: translateY(-2px);
+  }
+  
+  /* Специфические стили для кнопок Android с цветовыми акцентами */
+  .direct-download {
+	background: #4CAF50;
+	color: white;
+  }
+  
+  .direct-download:hover {
+	background: #388e3c;
+  }
+  
+  .google-play {
+	background: white;
+	color: #212121;
+  }
+  
+  .google-play:hover {
+	background: #f5f5f5;
+  }
+  
+  .alternative-stores {
+	background: #FF9800;
+	color: white;
+  }
+  
+  .alternative-stores:hover {
+	background: #e68900;
+  }
+  
+  /* Блок вариантов загрузки для Android */
+  .android-options {
+	display: flex;
+	flex-direction: column;
+	gap: 0.8rem;
+	margin-top: 1rem;
+	width: 100%;
+  }
+  
+  .option-icon {
+	font-size: 1.3rem;
+  }
+  
+  /* Дополнительная информация */
+  .download-info {
+	text-align: center;
+	max-width: 600px;
+	margin: 0 auto;
+  }
+  
+  .download-info ul {
+	list-style: none;
+	padding: 0;
+	margin: 2rem 0;
+  }
+  
+  .download-info li {
+	padding: 0.6rem 0;
+	text-align: left;
+	margin-left: 2rem;
+	color: #e2e8f0;
+  }
+  
+  .version-info {
+	color: #a0aec0;
+	font-style: italic;
+	margin-top: 2rem;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+	.download-cards {
+	  grid-template-columns: 1fr;
+	}
+	.android-options {
+	  flex-direction: column;
+	  align-items: stretch;
+	}
   }

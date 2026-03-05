@@ -193,3 +193,20 @@ function getCurrentSectionIndex() {
   }
   return sectionHeights.length - 1;
 }
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const header = document.querySelector('.head_container');
+      if (!entry.isIntersecting) {
+        header.classList.add('fixed');
+      } else {
+        header.classList.remove('fixed');
+      }
+    });
+  }, {
+    root: null,
+    threshold: 0,
+    rootMargin: '-80px 0px 0px 0px' // точка переключения на 80 px выше верха
+  });
+  
+  observer.observe(document.querySelector('.start_container'));
