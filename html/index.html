@@ -3,104 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fassum</title>
     <link rel="stylesheet" href="styles/style.css">
     <link rel="preload" href="fonts/Forum-Regular.ttf" as="font" type="font/ttf" crossorigin>
-    <title>Fassum</title>
 </head>
 <body>
-    <div class="page-wrapper">
-        <div class="start_container">
-            <div class="bg_layer"></div>
-            
-            <div class="snowContainer">
-                <div id="snow"></div>
-            </div>
-
-            <div class="hero_content">
-                <div class="logo">Fassum</div>
-                <h1 class="slogan">Общение без лишнего шума</h1>
-                <button class="cta_button" onclick="scrollToNext()">Попробовать веб-версию</button>
-            </div>
-        </div>
+    <section class="start_container" id="home">
+        <div class="bg_layer"></div>
         
+        <div class="snowContainer">
+            <div id="snow"></div>
+        </div>
 
-        <header class="head_container">
-          <nav class="navbar">
+        <div class="hero_content">
+            <div class="logo">Fassum</div>
+            <h1 class="slogan">Общение без лишнего шума</h1>
+            <button class="cta_button" onclick="document.getElementById('download').scrollIntoView({behavior: 'smooth'})">
+                Попробовать веб-версию
+            </button>
+        </div>
+    </section>
+
+    <header class="head_container" id="main-header">
+        <nav class="navbar">
             <div class="head-logo">
-              <span class="head-logo-icon">💬</span>
+                <span class="head-logo-icon">💬</span>
                 Fassum
             </div>
             <ul class="nav-menu">
-              <li><a href="#features">Возможности</a></li>
-              <li><a href="#how-it-works">Как работает</a></li>
-              <li><a href="#download">Скачать</a></li>
-              <li><a href="#contact">Контакты</a></li>
+                <li><a href="#features">Возможности</a></li>
+                <li><a href="#how-it-works">Как работает</a></li>
+                <li><a href="#download">Скачать</a></li>
+                <li><a href="#contact">Контакты</a></li>
             </ul>
             <div class="auth-buttons">
-              <button class="btn-login">Войти</button>
-              <button class="btn-signup">Регистрация</button>
+                <button class="btn-login">Войти</button>
+                <button class="btn-signup">Регистрация</button>
             </div>
-            <button class="hamburger-menu">☰</button>
-          </nav>
-        </header>
-        <div id="section3" class="section">
-          <section class="download-section">
+            <button class="hamburger-menu" aria-label="Открыть меню">☰</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="features" class="features-section section">
             <div class="container">
-              <h2>Скачайте мессенджер Fassum</h2>
-              <p class="section-subtitle">Общайтесь без границ — быстро, безопасно и удобно</p> 
+                <h2 class="section-title">Почему выбирают Fassum?</h2>
+                <p class="section-subtitle">Создан для тех, кто ценит свое время и приватность</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Сквозное шифрование</h3>
+                        <p>Ваши сообщения, звонки и файлы защищены надежным криптографическим алгоритмом. Никто, кроме вас, не сможет их прочитать.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Мгновенная доставка</h3>
+                        <p>Оптимизированный протокол обмена данными обеспечивает моментальную отправку сообщений даже при слабом интернет-соединении.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3>Синхронизация</h3>
+                        <p>Начните диалог на смартфоне и продолжите на десктопе. Ваша история переписки всегда под рукой на всех платформах.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>Чистый дизайн</h3>
+                        <p>Никакой рекламы, лишних кнопок и отвлекающих факторов. Только вы и ваше общение в понятном, минималистичном интерфейсе.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="download" class="download-section section">
+            <div class="container">
+                <h2>Скачайте мессенджер Fassum</h2>
+                <p class="section-subtitle">Общайтесь без границ — быстро, безопасно и удобно</p> 
+                
                 <div class="download-cards">
-                <!-- Карточка для Windows -->
-                  <div class="card-wrapper">
                     <div class="download-card">
-                      <div class="os-icon windows">🪟</div>
+                        <div class="os-icon windows">🪟</div>
                         <h3>Windows</h3>
                         <p>Версия для компьютеров и ноутбуков</p>
                         <ul class="requirements">
-                          <li>Windows 10/11 (64‑bit)</li>
-                          <li>4 ГБ ОЗУ</li>
-                          <li>500 МБ свободного места</li>
+                            <li>Windows 10/11 (64‑bit)</li>
+                            <li>4 ГБ ОЗУ</li>
+                            <li>500 МБ свободного места</li>
                         </ul>
                         <button class="download-btn windows-btn">Скачать для Windows (x32)</button>
                         <button class="download-btn windows-btn">Скачать для Windows (x64)</button>
-                      </div>
                     </div>
-                <!-- Карточка для Linux -->
-                  <div class="card-wrapper">
+
                     <div class="download-card">
-                      <div class="os-icon linux">🐧</div>
-                      <h3>Linux</h3>
-                      <p>Поддержка популярных дистрибутивов</p>
-                      <ul class="requirements">
-                        <li>Ubuntu 20.04+, Fedora 35+</li>
-                        <li>GLIBC 2.27+</li>
-                        <li>400 МБ свободного места</li>
-                      </ul>
-                      <button class="download-btn windows-btn">Скачать для Linux (.deb)</button>
-                      <button class="download-btn windows-btn">Скачать для Linux (.rpm)</button>
+                        <div class="os-icon linux">🐧</div>
+                        <h3>Linux</h3>
+                        <p>Поддержка популярных дистрибутивов</p>
+                        <ul class="requirements">
+                            <li>Ubuntu 20.04+, Fedora 35+</li>
+                            <li>GLIBC 2.27+</li>
+                            <li>400 МБ свободного места</li>
+                        </ul>
+                        <button class="download-btn linux-btn">Скачать для Linux (.deb)</button>
+                        <button class="download-btn linux-btn">Скачать для Linux (.rpm)</button>
                     </div>
-                  </div>
-              
-                <!-- Карточка для Android -->
-                  <div class="card-wrapper">
+                
                     <div class="download-card">
-                      <div class="os-icon android">📱</div>
-                      <h3>Android</h3>
-                      <p>Официальное приложение для смартфонов</p>
-                      <ul class="requirements">
-                        <li>Android 8.0+</li>
-                        <li>2 ГБ ОЗУ рекомендуется</li>
-                        <li>300 МБ свободного места</li>
-                      </ul>
-                      <button class="download-btn windows-btn">Google Play</button>
-                      <button class="download-btn windows-btn">Apple Store</button>
+                        <div class="os-icon android">📱</div>
+                        <h3>Мобильные</h3>
+                        <p>Официальное приложение для смартфонов</p>
+                        <ul class="requirements">
+                            <li>Android 8.0+ / iOS 13+</li>
+                            <li>2 ГБ ОЗУ рекомендуется</li>
+                            <li>300 МБ свободного места</li>
+                        </ul>
+                        <button class="download-btn android-btn">Google Play</button>
+                        <button class="download-btn ios-btn">Apple Store</button>
                     </div>
-                  </div>
-                  <!-- Дополнительная информация -->
                 </div>
-              </section>
-        </div>
-    </div>
-    
+            </div>
+        </section>
+    </main>
 
     <button class="home-button" id="homeBtn" aria-label="Вернуться на главную">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -108,6 +132,55 @@
             <path d="M9 12L12 9L15 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
     </button>
+    <footer class="footer_container" id="contact">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <div class="head-logo">
+                    <span class="head-logo-icon">💬</span>
+                    Fassum
+                </div>
+                <p class="footer-desc">Общение без лишнего шума. Быстрый, безопасный и независимый мессенджер для любых платформ.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Twitter">🐦</a>
+                    <a href="#" aria-label="GitHub">🐙</a>
+                    <a href="#" aria-label="Telegram">✈️</a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Продукт</h4>
+                <ul>
+                    <li><a href="#features">Возможности</a></li>
+                    <li><a href="#download">Скачать</a></li>
+                    <li><a href="#">Веб-версия</a></li>
+                    <li><a href="#">Безопасность</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Компания</h4>
+                <ul>
+                    <li><a href="#">О нас</a></li>
+                    <li><a href="#">Блог</a></li>
+                    <li><a href="#">Контакты</a></li>
+                    <li><a href="#">Поддержка</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Документы</h4>
+                <ul>
+                    <li><a href="#">Условия использования</a></li>
+                    <li><a href="#">Политика конфиденциальности</a></li>
+                    <li><a href="#">Лицензия</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Fassum. Все права защищены.</p>
+        </div>
+    </footer>
     <script src="scripts/script.js"></script>
 </body>
 </html>
