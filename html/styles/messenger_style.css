@@ -39,13 +39,17 @@
 /* =========================================
    2. БОКОВАЯ ПАНЕЛЬ (chats)
    ========================================= */
+
 .chats {
     width: 350px;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
     background: rgba(0, 0, 0, 0.2);
-}
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Плавный easing */
+    transform: translateX(0);
+    will-change: transform, width, border; /* Оптимизация производительности */
+  }
 
 .chats-header {
     padding: 15px;
@@ -79,7 +83,7 @@
 }
 
 .search-bar {
-    padding: 15px;
+    padding: 19.5px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -87,7 +91,7 @@
 
 .search-bar input {
     width: calc(100% - 30px);
-    padding: 10px 15px;
+    padding: 5px 15px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
@@ -102,7 +106,7 @@
 
 .chat-item {
     display: flex;
-    padding: 15px 20px;
+    padding: 10px 20px;
     gap: 15px;
     cursor: pointer;
     transition: background 0.3s;
@@ -273,9 +277,11 @@
     color: white;
     font-size: 24px;
     cursor: pointer;
-    height: 71px;
+    height: 70px;
+    width: 100%;
     justify-content: center;
     align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 /* Стили для выпадающего меню */
@@ -336,7 +342,7 @@
 }
 
 .sidebar-header {
-    width: 60px;
+    width: 70px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -415,11 +421,9 @@
   /* Стили для папок */
   /* Контейнер папок — центрируем элементы */
 .folders-container {
-    padding: 15px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
   }
   
   /* Стили для элемента папки */
@@ -427,11 +431,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
+    justify-content: space-evenly;
     cursor: pointer;
     transition: transform 0.2s, opacity 0.2s;
-    width: 60px;
+    width: 70px;
+    height: 65px;
     text-align: center;
     background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
     background-clip: text;
@@ -440,7 +444,6 @@
   }
   
   .folder-item:hover {
-    transform: scale(1.05);
     opacity: 0.9;
     background: linear-gradient(135deg, #0066ff 0%, #493ad5 100%);
     background-clip: text;
@@ -449,7 +452,6 @@
   }
 
   .folder-item.active {
-    transform: scale(1.1);
     opacity: 1;
     background: linear-gradient(135deg, #0066ff 0%, #493ad5 100%);
     background-clip: text;
