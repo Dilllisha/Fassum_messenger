@@ -15,7 +15,40 @@
                         ☰
                     </button>
                 </div>
-                <div class="sidebar-pop"></div>
+                <div class="sidebar-pop">
+                    <div class="folders-container">
+                        <div class="folder-item active" data-folder="all">
+                          <div class="folder-icon">
+                            <span class="folder-image>">📁</span>
+                        </div>
+                          <span class="folder-label">Все чаты</span>
+                        </div>
+                        <div class="folder-item" data-folder="work">
+                          <div class="folder-icon">
+                            <span class="folder-image>">
+                                📁
+                            </span>
+                          </div>
+                          <span class="folder-label">Работа</span>
+                        </div>
+                        <div class="folder-item" data-folder="personal">
+                          <div class="folder-icon">
+                            <span class="folder-image>">
+                                📁
+                            </span>
+                          </div>
+                          <span class="folder-label">Личное</span>
+                        </div>
+                        <div class="folder-item" data-folder="unread">
+                          <div class="folder-icon">
+                            <span class="folder-image>">
+                                📁
+                            </span>
+                          </div>
+                          <span class="folder-label">Непрочитанные</span>
+                        </div>
+                      </div>
+                  </div>
                 <div class="quit">
                     <button class="quit-container">
                         ➜]
@@ -32,8 +65,9 @@
             </header>
 
             <div class="search-bar">
-                <input type="text" placeholder="Поиск контактов...">
-            </div>
+                <button class="search-icon">🔍︎</button>
+                <input type="text" placeholder="Поиск контактов..." class="search-input">
+              </div>
 
             <div class="chats-list">
                 <div class="chat-item active">
@@ -95,6 +129,6 @@
             </footer>
         </main>
     </div>
-    <script src="scripts/messanger.js"></script>
+    <script src="scripts/messenger.js"></script>
 </body>
 </html>

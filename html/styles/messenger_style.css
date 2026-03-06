@@ -80,6 +80,9 @@
 
 .search-bar {
     padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .search-bar input {
@@ -354,3 +357,158 @@
 .sidebar-pop {
     flex: 1;
 }
+
+/* Иконка поиска — видна только в компактном режиме */
+.search-icon {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  
+  .chats.compact .search-icon {
+    display: block;
+  }
+  
+  /* Поле ввода — скрыто в компактном режиме, видно в развёрнутом */
+  .search-input {
+    width: calc(100% - 30px);
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: white;
+    outline: none;
+  }
+  
+  .chats.compact .search-input {
+    display: none;
+  }
+  
+  /* Стили для .compact остаются прежними */
+  .chats.compact {
+    width: 70px;
+    transition: width 0.3s ease;
+  }
+  
+  .chats.compact .chat-info,
+  .chats.compact .last-message,
+  .chats.compact .chat-meta,
+  .chats.compact .username {
+    display: none;
+  }
+  
+  .chats.compact .avatar-circle {
+    margin: 0 auto;
+  }
+  
+  .chats.compact .search-icon {
+    display: block;
+  }
+  
+  .chats.compact .search-input {
+    display: none;
+  }
+  
+  /* Стили для папок */
+  /* Контейнер папок — центрируем элементы */
+.folders-container {
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Стили для элемента папки */
+  .folder-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    width: 60px;
+    text-align: center;
+    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .folder-item:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+    background: linear-gradient(135deg, #0066ff 0%, #493ad5 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .folder-item.active {
+    transform: scale(1.1);
+    opacity: 1;
+    background: linear-gradient(135deg, #0066ff 0%, #493ad5 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Стили для иконки папки — делаем её одноцветной */
+  .folder-icon {
+    font-size: 1.4rem;
+    color: #00d2ff; /* Одноцветный синий цвет */
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Стили для подписи папки (название снизу) */
+  .folder-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    line-height: 1.2;
+  }
+  
+  /* Адаптация для компактного режима — показываем только иконки */
+  .chats.compact .folder-label {
+    display: none;
+  }
+  
+  .chats.compact .folders-container {
+    gap: 12px; /* Увеличиваем отступ между иконками в компактном режиме */
+  }
+  
+  /* Дополнительные стили для активного состояния */
+  .folder-item.active .folder-icon {
+    color: #ffffff; /* Белый цвет для активной иконки */
+  }
+  
+  .folder-item.active .folder-label {
+    color: #ffffff; /* Белый цвет для подписи активной папки */
+    font-weight: 600;
+  }
+  
+  /* Адаптация списка чатов для компактного режима */
+  .chats.compact .chats-list {
+    padding-right: 5px;
+  }
+  
+  .chats.compact .chat-item {
+    justify-content: center;
+    padding: 12px 5px;
+  }
+  
+  .chats.compact .unread-count {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 0.6rem;
+    padding: 1px 4px;
+  }
