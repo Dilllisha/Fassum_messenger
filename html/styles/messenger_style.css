@@ -457,6 +457,7 @@
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    border-left: 3px solid #00d2ff;
   }
   
   /* Стили для иконки папки — делаем её одноцветной */
