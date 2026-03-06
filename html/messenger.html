@@ -8,54 +8,61 @@
 </head>
 <body class="web-app-body">
     <div class="app-container">
+        
         <aside class="sidebar">
             <header class="sidebar-header">
                 <div class="burger">
-                    <button class="burger-menu">
+                    <button class="burger-menu" aria-label="Открыть меню">
                         ☰
                     </button>
                 </div>
                 <div class="sidebar-pop">
                     <div class="folders-container">
                         <div class="folder-item active" data-folder="all">
-                          <div class="folder-icon">
-                            <span class="folder-image>">📁</span>
+                            <div class="folder-icon">
+                                <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+                                    <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+                                </svg>
+                            </div>
+                            <span class="folder-label">Все чаты</span>
                         </div>
-                          <span class="folder-label">Все чаты</span>
-                        </div>
+                        
                         <div class="folder-item" data-folder="work">
-                          <div class="folder-icon">
-                            <span class="folder-image>">
-                                📁
-                            </span>
-                          </div>
-                          <span class="folder-label">Работа</span>
+                            <div class="folder-icon">
+                                <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+                                    <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+                                </svg>
+                            </div>
+                            <span class="folder-label">Работа</span>
                         </div>
+                        
                         <div class="folder-item" data-folder="personal">
-                          <div class="folder-icon">
-                            <span class="folder-image>">
-                                📁
-                            </span>
-                          </div>
-                          <span class="folder-label">Личное</span>
+                            <div class="folder-icon">
+                                <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+                                    <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+                                </svg>
+                            </div>
+                            <span class="folder-label">Личное</span>
                         </div>
+                        
                         <div class="folder-item" data-folder="unread">
-                          <div class="folder-icon">
-                            <span class="folder-image>">
-                                📁
-                            </span>
-                          </div>
-                          <span class="folder-label">Непрочитанные</span>
+                            <div class="folder-icon">
+                                <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+                                    <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+                                </svg>
+                            </div>
+                            <span class="folder-label">Непрочитанные</span>
                         </div>
-                      </div>
-                  </div>
+                    </div>
+                </div>
                 <div class="quit">
-                    <button class="quit-container">
-                        ➜]
+                    <button class="quit-container" aria-label="Выйти">
+                        ➜
                     </button>
                 </div>
             </header>
         </aside>
+
         <aside class="chats">
             <header class="chats-header">
                 <div class="user-profile">
@@ -65,9 +72,9 @@
             </header>
 
             <div class="search-bar">
-                <button class="search-icon">🔍︎</button>
+                <button class="search-icon" aria-label="Поиск">🔍︎</button>
                 <input type="text" placeholder="Поиск контактов..." class="search-input">
-              </div>
+            </div>
 
             <div class="chats-list">
                 <div class="chat-item active">
@@ -95,7 +102,6 @@
             </div>
         </aside>
 
-
         <main class="chat-window">
             <header class="chat-header">
                 <div class="chat-header-info">
@@ -106,7 +112,7 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button>⋮</button>
+                    <button aria-label="Настройки чата">⋮</button>
                 </div>
             </header>
 
@@ -117,17 +123,27 @@
                 </div>
 
                 <div class="message outgoing">
-                    <div class="message-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium quibusdam labore nam officia reiciendis, fugiat asperiores dolores impedit, similique ipsam voluptatibus a ducimus perspiciatis. Explicabo, natus adipisci. Distinctio, quae modi! Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas tempore ipsam, eligendi commodi quaerat nemo eaque iusto dolorem libero doloribus nesciunt accusantium? Pariatur voluptatibus enim beatae, nostrum sapiente debitis assumenda!</div>
+                    <div class="message-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium quibusdam labore nam officia reiciendis, fugiat asperiores dolores impedit, similique ipsam voluptatibus a ducimus perspiciatis. Explicabo, natus adipisci. Distinctio, quae modi!</div>
                     <div class="message-time">14:20</div>
                 </div>
             </section>
 
             <footer class="input-area">
-                <button class="emoji-btn">😊</button>
+                <button class="emoji-btn" aria-label="Смайлики">😊</button>
                 <input type="text" placeholder="Напишите сообщение...">
-                <button class="send-btn">➔</button>
+                <button class="send-btn" aria-label="Отправить">➔</button>
             </footer>
         </main>
+        <div class="modal-overlay" id="quitModal">
+            <div class="modal-content">
+                <h3>Выход из аккаунта</h3>
+                <p>Вы уверены, что хотите выйти? Вам придется заново вводить логин и пароль.</p>
+                <div class="modal-actions">
+                    <button class="btn-cancel" id="cancelQuit">Отмена</button>
+                    <button class="btn-confirm" id="confirmQuit">Выйти</button>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="scripts/messenger.js"></script>
 </body>
