@@ -287,7 +287,7 @@
 /* Стили для выпадающего меню */
 .chats {
     max-width: 350px;
-    transition: all 0.3s ease;
+    transition: all 1s ease;
     transform: translateX(0);
 }
 
@@ -336,7 +336,6 @@
     cursor: pointer;
     transition: background 0.3s;
 }
-
 .settings-list li:hover {
     background: rgba(255, 255, 255, 0.05);
 }
@@ -396,7 +395,7 @@
   /* Стили для .compact остаются прежними */
   .chats.compact {
     width: 70px;
-    transition: width 0.3s ease;
+    transition: width 1s ease;
   }
   
   .chats.compact .chat-info,
@@ -515,3 +514,62 @@
     font-size: 0.6rem;
     padding: 1px 4px;
   }
+
+  /* Плавное скрытие содержимого chat-item */
+.chat-item .avatar-circle,
+.chat-item .chat-info,
+.chat-item .unread-count {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* В компактном режиме: скрываем всё, кроме аватара */
+.chats.compact .chat-item .chat-info {
+  opacity: 0;
+  transform: translateX(-10px);
+  max-width: 0;
+  padding: 0;
+}
+
+.chats.compact .chat-item .unread-count {
+  opacity: 0;
+  transform: scale(0.8);
+  margin: 0;
+}
+
+/* Сохраняем только аватар, центрируем его */
+.chats.compact .chat-item {
+  justify-content: center;
+  gap: 0;
+  padding: 12px 5px;
+}
+
+.chats.compact .chat-item .avatar-circle {
+  margin: 0 auto;
+  flex-shrink: 0; /* Запрещаем сжатие аватара */
+}
+
+/* Плавное появление при разворачивании */
+.chats:not(.compact) .chat-item .chat-info {
+  opacity: 1;
+  transform: translateX(0);
+  max-width: 200px; /* Восстанавливаем максимальную ширину */
+  padding: 0 15px; /* Восстанавливаем отступы */
+}
+
+.chats:not(.compact) .chat-item .unread-count {
+  opacity: 1;
+  transform: scale(1);
+  margin-top: 5px;
+}
+
+/* Дополнительно: плавное изменение отступов для лучшего восприятия */
+.chats.compact .chat-item {
+  padding-right: 5px;
+}
+
+.chats:not(.compact) .chat-item {
+  padding-right: 20px;
+}
+    
