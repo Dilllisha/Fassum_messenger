@@ -68,6 +68,8 @@
 .avatar-circle {
     width: 40px;
     height: 40px;
+    min-width: 40px;
+    min-height: 40px;
     border-radius: 50%;
     background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); /* Фирменный градиент */
     display: flex;
@@ -106,6 +108,8 @@
 
 .chat-item {
     display: flex;
+    justify-content: flex-start; /* Элементы прижимаются к началу оси */
+    align-items: center;         /* Вертикальное выравнивание остаётся */
     padding: 10px 20px;
     gap: 15px;
     cursor: pointer;
