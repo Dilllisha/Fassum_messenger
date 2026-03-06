@@ -230,8 +230,64 @@ input {
 }
 
 /* =========================================
-   4. СПИСОК ЧАТОВ (CHATS)
+   4. ОБЛАСТЬ ВВОДА (INPUT AREA)
    ========================================= */
+.input-area {
+    padding: 15px 20px;
+    background: none; /* Строгий темный фон внешней панели */
+    border-top: none;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background: none; /* Цвет фона самого инпута */
+    padding: 8px 15px 8px 20px;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.input-wrapper input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #dbdee1;
+    font-size: 0.95rem;
+    outline: none;
+    padding: 5px 0;
+    margin-right: 15px; /* Отступ текста от кнопок */
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Идеальное расстояние между иконками */
+}
+
+.action-buttons button {
+    background: none;
+    border: none;
+    color: #b5bac1; /* Спокойный серый для иконок */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    padding: 2px;
+}
+
+.action-buttons button:hover {
+    color: #dbdee1;
+    transform: scale(1.1);
+}
+
+/* Бирюзовый цвет для кнопки отправки, как на скриншоте */
+.send-btn {
+    color: #1abc9c !important; 
+}
+.send-btn:hover {
+    color: #2ecc71 !important;
+}
 .chats {
     width: 350px;
     background: var(--bg-panel-dark);
@@ -391,10 +447,11 @@ input {
     flex: 1;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .chat-header {
-    padding: 15px 25px;
+    padding: 17px 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -477,15 +534,9 @@ input {
 .input-area input {
     flex: 1;
     padding: 12px 20px;
-    background: rgba(0, 0, 0, 0.3);
-    border: var(--border-subtle);
-    border-radius: 20px;
+    background: none;
+    border: none;
     transition: var(--transition-main);
-}
-
-.input-area input:focus {
-    background: rgba(0, 0, 0, 0.5);
-    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .input-area button {
@@ -692,4 +743,379 @@ button,
 .btn-confirm:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* =========================================
+   9. ПАНЕЛЬ ВЫБОРА ЭМОДЗИ И СТИКЕРОВ
+   ========================================= */
+.media-picker {
+    position: absolute;
+    bottom: 80px; 
+    
+    /* УБРАТЬ left: 20px; и заменить на эти строки: */
+    right: 20px; 
+    transform-origin: bottom right; /* Теперь окно будет "вырастать" из правого нижнего угла */
+    
+    width: 340px;
+    height: 420px;
+    background: #2b2d31;
+    border: 1px solid #1e1f22;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    
+    /* Анимация скрытия */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.95);
+    transform-origin: bottom left;
+    transition: var(--transition-main);
+}
+
+.media-picker.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0) scale(1);
+}
+
+/* Вкладки */
+.media-tabs {
+    display: flex;
+    border-bottom: var(--border-subtle);
+    padding: 0 10px;
+    flex-shrink: 0;
+}
+
+.media-tab {
+    flex: 1;
+    padding: 15px 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.media-tab:hover {
+    color: var(--text-main);
+}
+
+.media-tab.active {
+    color: var(--accent-hover); /* Цвет как на референсе */
+    border-bottom-color: var(--accent-hover);
+}
+
+/* Контейнер со скроллом */
+.media-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    
+    /* Кастомный тонкий скроллбар */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.media-content::-webkit-scrollbar {
+    width: 6px;
+}
+.media-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+.media-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Секции (Панели) */
+.media-pane {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.media-pane.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Сетки для контента */
+.emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+}
+
+.emoji-grid span {
+    font-size: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    user-select: none;
+}
+
+.emoji-grid span:hover {
+    transform: scale(1.25);
+}
+
+.stickers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.gifs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+/* Заглушки */
+.sticker-placeholder, .gif-placeholder {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sticker-placeholder {
+    aspect-ratio: 1; /* Квадрат */
+}
+
+.gif-placeholder {
+    aspect-ratio: 16/9; /* Прямоугольник */
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.sticker-placeholder:hover, .gif-placeholder:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================
+   9. ПАНЕЛЬ ВЫБОРА ЭМОДЗИ И СТИКЕРОВ (GLASSMorphism)
+   ========================================= */
+.media-picker {
+    position: absolute;
+    bottom: 80px; /* Над полем ввода */
+    right: 20px; 
+    transform-origin: bottom right; /* Анимация из правого нижнего угла */
+    
+    width: 340px;
+    height: 420px;
+    
+    /* Эффект "Глассморфизма" (Стекло) */
+    background: rgba(11, 25, 44, 0.7); /* Синеватый полупрозрачный фон */
+    backdrop-filter: blur(25px); /* Сильное размытие */
+    -webkit-backdrop-filter: blur(25px);
+    
+    /* Тонкая рамка и тень, как на главной странице */
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+    
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    
+    /* Анимация скрытия */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(15px) scale(0.95);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.media-picker.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0) scale(1);
+}
+
+/* Вкладки (Tabs) */
+.media-tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 0 10px;
+    flex-shrink: 0;
+}
+
+.media-tab {
+    flex: 1;
+    padding: 18px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    
+    color: var(--text-muted); /* rgba(148, 163, 184) - тусклый серо-синий */
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.media-tab:hover {
+    color: var(--text-main); /* #e2e8f0 - белый */
+}
+
+/* Фирменный СИНИЙ акцент для активной вкладки */
+.media-tab.active {
+    color: var(--accent-primary); /* #0ea5e9 - основной синий */
+    border-bottom-color: var(--accent-primary);
+}
+
+/* Контент вкладок (media-content) */
+.media-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+    
+    /* Кастомный тонкий скроллбар */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(14, 165, 233, 0.15) transparent; /* Полупрозрачный синий */
+}
+
+/* Кастомный скроллбар для Webkit */
+.media-content::-webkit-scrollbar {
+    width: 6px;
+}
+.media-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+.media-content::-webkit-scrollbar-thumb {
+    background: rgba(14, 165, 233, 0.15); /* Полупрозрачный синий */
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+.media-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(14, 165, 233, 0.3); /* Ярче при наведении */
+}
+
+/* Панели вкладок (Media-pane) */
+.media-pane {
+    display: none;
+}
+.media-pane.active {
+    display: block;
+    animation: mediaPaneFadeIn 0.35s ease;
+}
+
+@keyframes mediaPaneFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Сетки (Grids) */
+.emoji-grid, .stickers-grid, .gifs-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.emoji-grid {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.emoji-grid span {
+    font-size: 1.6rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-grid span:hover {
+    transform: scale(1.2) translateY(-2px);
+}
+
+.stickers-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.gifs-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Заглушки для Стикеров/GIF (Placeholder) */
+.sticker-placeholder, .gif-placeholder {
+    background: rgba(14, 165, 233, 0.05); /* Полупрозрачный СИНИЙ фон */
+    border: 1px solid rgba(14, 165, 233, 0.1); /* Синяя рамка */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-hover); /* Светлый синий */
+    font-size: 2.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sticker-placeholder { aspect-ratio: 1; }
+.gif-placeholder { 
+    aspect-ratio: 16/9; 
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.sticker-placeholder:hover, .gif-placeholder:hover {
+    background: rgba(14, 165, 233, 0.1);
+    border-color: rgba(14, 165, 233, 0.2);
+    transform: translateY(-2px);
+}
+/* =========================================
+   10. КОРРЕКЦИЯ ЧИТАЕМОСТИ (УВЕЛИЧЕНИЕ ШРИФТОВ)
+   ========================================= */
+
+/* 1. Чуть увеличиваем базовый масштаб для всего сайта (по умолчанию 16px) */
+html {
+    font-size: 17px; 
+}
+
+/* 2. Точечно укрупняем самые важные и самые мелкие элементы */
+.folder-label {
+    font-size: 0.75rem; /* Подписи папок (было совсем мелко) */
+}
+
+.chat-name, 
+.username {
+    font-size: 1.1rem;  /* Имена собеседников делаем выразительнее */
+}
+
+.last-message {
+    font-size: 0.95rem; /* Текст последнего сообщения в списке */
+}
+
+.message {
+    font-size: 1.05rem; /* Сам текст внутри пузырей переписки */
+    line-height: 1.5;   /* Сохраняем комфортный межстрочный интервал */
+}
+
+.message-time {
+    font-size: 0.8rem;  /* Время сообщения */
+}
+
+.input-wrapper input {
+    font-size: 1.05rem; /* Поле, где пользователь печатает текст */
+}
+
+.status.online {
+    font-size: 0.85rem; /* Статус "online" под именем */
+}
+
+.media-tab {
+    font-size: 1rem;    /* Вкладки "Эмодзи / Стикеры" */
 }
