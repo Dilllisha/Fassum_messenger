@@ -1119,3 +1119,20 @@ html {
 .media-tab {
     font-size: 1rem;    /* Вкладки "Эмодзи / Стикеры" */
 }
+
+/* =========================================
+   11. СКРЫТИЕ СИСТЕМНЫХ СКРОЛЛБАРОВ
+   ========================================= */
+
+/* Прячем скролл в окне переписки и в списке чатов */
+.messages-container,
+.chats-list {
+    -ms-overflow-style: none;  /* Для старых версий IE и Edge */
+    scrollbar-width: none;     /* Для Firefox */
+}
+
+/* Прячем скролл для браузеров на движке WebKit (Chrome, Safari, Opera, новый Edge) */
+.messages-container::-webkit-scrollbar,
+.chats-list::-webkit-scrollbar {
+    display: none;
+}
