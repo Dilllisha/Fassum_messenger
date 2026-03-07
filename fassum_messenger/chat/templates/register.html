@@ -1,11 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация — Fassum</title>
-    <link rel="stylesheet" href="styles/auth_style.css">
-    <link rel="preload" href="fonts/Forum-Regular.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="stylesheet" href="{% static 'styles/auth_style.css' %}">
+    <link rel="preload" href="{% static 'fonts/Forum-Regular.ttf' %}" as="font" type="font/ttf" crossorigin>
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
 </head>
 <body>
     <div class="auth-wrapper">
@@ -14,48 +16,56 @@
 
         <div class="auth-card">
             <div class="auth-header">
-                <h1 class="logo">Fassum</h1>
+                <h1 class="logo"><a href="{% url 'home' %}">Fassum</a></h1>
                 <h2>Создать аккаунт</h2>
                 <p>Начните общаться безопасно прямо сейчас</p>
             </div>
 
-            <form id="registerForm" class="auth-form">
+            <form method="POST" action="{% url 'register' %}" class="auth-form">
+                {% csrf_token %}
+
+                {% if error_message %}
+                    <div style="color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
+
                 <div class="input-group">
-                    <label for="username">Имя пользователя (Тег)</label>
-                    <input type="text" id="username" placeholder="Только латиница, без пробелов" required autocomplete="off">
-                    <span class="error-message" id="usernameError">От 3 до 10 символов, только латиница и цифры!</span>
+                    <label for="first_name">Ваше имя</label>
+                    <input type="text" id="first_name" name="first_name" placeholder="Например, Данила" required autocomplete="name">
+                </div>
+
+                <div class="input-group">
+                    <label for="username">Уникальный тег (без @)</label>
+                    <input type="text" id="username" name="username" placeholder="danila" required autocomplete="off">
                 </div>
 
                 <div class="input-group">
                     <label for="email">E-mail</label>
-                    <input type="email" id="email" placeholder="Ваш почтовый ящик" required autocomplete="email">
-                    <span class="error-message" id="emailError">Введите корректный email адрес!</span>
+                    <input type="email" id="email" name="email" placeholder="Ваш почтовый ящик" required autocomplete="email">
                 </div>
 
                 <div class="input-group">
                     <label for="password">Пароль</label>
-                    <input type="password" id="password" placeholder="От 6 до 13 символов" required autocomplete="new-password">
-                    <span class="error-message" id="passwordStrengthError">Нужны заглавная, строчная буквы и спецсимвол!</span>
+                    <input type="password" id="password" name="password" placeholder="От 6 до 13 символов" required autocomplete="new-password">
                 </div>
 
                 <div class="input-group">
                     <label for="confirmPassword">Повторите пароль</label>
-                    <input type="password" id="confirmPassword" placeholder="Пароль еще раз" required autocomplete="new-password">
-                    <span class="error-message" id="passwordError">Пароли не совпадают!</span>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Пароль еще раз" required autocomplete="new-password">
                 </div>
 
                 <button type="submit" class="submit-btn" id="submitBtn">
                     <span class="btn-text">Зарегистрироваться</span>
-                    <span class="loader" style="display: none;"></span>
                 </button>
             </form>
 
             <div class="auth-footer">
-                Уже есть аккаунт? <a href="login.html" class="auth-link">Войти</a>
+                Уже есть аккаунт? <a href="{% url 'login' %}" class="auth-link">Войти</a>
             </div>
         </div>
     </div>
 
-    <script src="scripts/auth.js"></script>
+    <script src="{% static 'scripts/auth.js' %}"></script>
 </body>
 </html>

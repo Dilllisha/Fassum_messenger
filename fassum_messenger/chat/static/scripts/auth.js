@@ -7,39 +7,63 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (registerForm) {
         // Инпуты
+        const nameInput = document.getElementById('first_name'); // НОВОЕ ПОЛЕ
         const usernameInput = document.getElementById('username');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('confirmPassword');
-        
-        // Элементы для вывода ошибок
+
+        // --- ЛОГИКА АВТОГЕНЕРАЦИИ ТЕГА ---
+        if (nameInput && usernameInput) {
+            const translit = (str) => {
+                const ru = {
+                    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd',
+                    'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i',
+                    'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n',
+                    'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't',
+                    'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch',
+                    'ш': 'sh', 'щ': 'sch', 'ъ': '', 'ы': 'y', 'ь': '',
+                    'э': 'e', 'ю': 'yu', 'я': 'ya', ' ': '_'
+                };
+                return str.toLowerCase().split('').map(char => ru[char] || char).join('').replace(/[^a-z0-9_]/g, '');
+            };
+
+            nameInput.addEventListener('input', () => {
+                if (!usernameInput.dataset.manual) {
+                    usernameInput.value = translit(nameInput.value);
+                }
+            });
+
+            usernameInput.addEventListener('input', () => {
+                usernameInput.dataset.manual = 'true';
+                usernameInput.value = usernameInput.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+            });
+        }
+        // ----------------------------------
+
         const usernameError = document.getElementById('usernameError');
         const emailError = document.getElementById('emailError');
         const passwordStrengthError = document.getElementById('passwordStrengthError');
         const passwordError = document.getElementById('passwordError');
-        
-        // Кнопка и анимация загрузки
+
         const submitBtn = document.getElementById('submitBtn');
         const btnText = submitBtn.querySelector('.btn-text');
         const loader = submitBtn.querySelector('.loader');
 
-        // Регулярные выражения (правила)
-        const usernameRegex = /^[a-zA-Z0-9_]{3,10}$/; 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+        const usernameRegex = /^[a-zA-Z0-9_]{3,10}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{6,13}$/;
 
-        // Функция показа/скрытия ошибки
         const showError = (input, errorElement, show) => {
             if (show) {
                 errorElement.style.display = 'block';
-                input.style.borderColor = '#ef4444'; // Красная рамка
+                input.style.borderColor = '#ef4444';
             } else {
                 errorElement.style.display = 'none';
-                input.style.borderColor = 'rgba(255, 255, 255, 0.1)'; // Обычная рамка
+                input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
             }
         };
 
-        // Функции валидации каждого поля
         const validateUsername = () => {
             const isValid = usernameRegex.test(usernameInput.value);
             showError(usernameInput, usernameError, !isValid);
@@ -65,47 +89,34 @@ document.addEventListener('DOMContentLoaded', () => {
             return isMatch;
         };
 
-        // ПРОВЕРКА В РЕАЛЬНОМ ВРЕМЕНИ (При вводе текста)
         usernameInput.addEventListener('input', validateUsername);
         emailInput.addEventListener('input', validateEmail);
-        
         passwordInput.addEventListener('input', () => {
             validatePasswordStrength();
-            if (confirmPasswordInput.value !== '') {
-                checkPasswordsMatch();
-            }
+            if (confirmPasswordInput.value !== '') checkPasswordsMatch();
         });
-        
         confirmPasswordInput.addEventListener('input', checkPasswordsMatch);
 
-        // ОТПРАВКА ФОРМЫ РЕГИСТРАЦИИ
+        // ОТПРАВКА ФОРМЫ РЕГИСТРАЦИИ (DJAGO READY)
         registerForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Останавливаем перезагрузку страницы
-
-            // Принудительно проверяем все поля
             const isUsernameValid = validateUsername();
             const isEmailValid = validateEmail();
             const isPasswordStrong = validatePasswordStrength();
             const isPasswordsMatch = checkPasswordsMatch();
 
-            // Если есть ошибка — трясем форму
+            // Если есть ошибка фронтенда — отменяем отправку и трясем форму
             if (!isUsernameValid || !isEmailValid || !isPasswordStrong || !isPasswordsMatch) {
+                e.preventDefault();
                 registerForm.style.transform = 'translateX(10px)';
                 setTimeout(() => registerForm.style.transform = 'translateX(-10px)', 100);
                 setTimeout(() => registerForm.style.transform = 'translateX(0)', 200);
                 return;
             }
 
-            // Включаем лоадер
+            // Иначе — форма улетает на сервер. Показываем лоадер для красоты.
             btnText.style.display = 'none';
             loader.style.display = 'block';
-            submitBtn.disabled = true;
-
-            // Переход в мессенджер через 1.5 секунды
-            setTimeout(() => {
-                console.log('Данные валидны. Аккаунт создан!');
-                window.location.href = 'messenger.html'; 
-            }, 1500);
+            submitBtn.style.pointerEvents = 'none';
         });
     }
 
@@ -113,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. ЛОГИКА ДЛЯ СТРАНИЦЫ ВХОДА (LOGIN)
     // =========================================
     const loginForm = document.getElementById('loginForm');
-    
+
     if (loginForm) {
         const loginEmailInput = document.getElementById('loginEmail');
         const loginPasswordInput = document.getElementById('loginPassword');
@@ -122,89 +133,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const loginLoader = loginSubmitBtn.querySelector('.loader');
 
         loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            // Проверка на пустые поля
+            // Запрещаем пустые поля
             if (loginEmailInput.value.trim() === '' || loginPasswordInput.value.trim() === '') {
+                e.preventDefault();
                 loginForm.style.transform = 'translateX(10px)';
                 setTimeout(() => loginForm.style.transform = 'translateX(-10px)', 100);
                 setTimeout(() => loginForm.style.transform = 'translateX(0)', 200);
                 return;
             }
 
-            // Включаем лоадер
+            // Если всё ок — показываем анимацию загрузки и даем Django обработать запрос
             loginBtnText.style.display = 'none';
             loginLoader.style.display = 'block';
-            loginSubmitBtn.disabled = true;
-
-            // Переход в мессенджер через 1 секунду
-            setTimeout(() => {
-                console.log('Вход выполнен успешно!');
-                window.location.href = 'messenger.html'; 
-            }, 1000);
+            loginSubmitBtn.style.pointerEvents = 'none';
         });
     }
-    // =========================================
-    // 3. ЛОГИКА ДЛЯ СТРАНИЦЫ ВОССТАНОВЛЕНИЯ ПАРОЛЯ
-    // =========================================
-    const forgotForm = document.getElementById('forgotForm');
-    
-    if (forgotForm) {
-        const forgotEmailInput = document.getElementById('forgotEmail');
-        const forgotEmailError = document.getElementById('forgotEmailError');
-        const forgotSubmitBtn = document.getElementById('forgotSubmitBtn');
-        const forgotBtnText = forgotSubmitBtn.querySelector('.btn-text');
-        const forgotLoader = forgotSubmitBtn.querySelector('.loader');
-        
-        const successMessage = document.getElementById('successMessage');
-        const emailGroup = document.getElementById('emailGroup');
-        const headerDesc = document.getElementById('headerDesc');
 
-        // Регулярное выражение для почты
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        // Валидация
-        const validateForgotEmail = () => {
-            const isValid = emailRegex.test(forgotEmailInput.value);
-            if (!isValid) {
-                forgotEmailError.style.display = 'block';
-                forgotEmailInput.style.borderColor = '#ef4444';
-            } else {
-                forgotEmailError.style.display = 'none';
-                forgotEmailInput.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-            }
-            return isValid;
-        };
-
-        // Проверка в реальном времени
-        forgotEmailInput.addEventListener('input', validateForgotEmail);
-
-        forgotForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            // Если email введен неверно — трясем форму
-            if (!validateForgotEmail()) {
-                forgotForm.style.transform = 'translateX(10px)';
-                setTimeout(() => forgotForm.style.transform = 'translateX(-10px)', 100);
-                setTimeout(() => forgotForm.style.transform = 'translateX(0)', 200);
-                return;
-            }
-
-            // Показываем лоадер
-            forgotBtnText.style.display = 'none';
-            forgotLoader.style.display = 'block';
-            forgotSubmitBtn.disabled = true;
-
-            // Имитация отправки письма на сервер (1.5 секунды)
-            setTimeout(() => {
-                // Прячем поле ввода, кнопку и старое описание
-                emailGroup.style.display = 'none';
-                forgotSubmitBtn.style.display = 'none';
-                headerDesc.style.display = 'none';
-                
-                // Показываем зеленое сообщение об успехе
-                successMessage.style.display = 'block';
-            }, 1500);
-        });
-    }
+    // (Сюда же добавь свою старую логику для восстановления пароля, если она нужна)
 });

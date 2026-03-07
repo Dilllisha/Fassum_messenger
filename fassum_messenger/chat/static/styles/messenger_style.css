@@ -7,30 +7,30 @@
     --text-main: #e2e8f0;       /* Мягкий белый для комфортного чтения */
     --text-muted: #94a3b8;      /* Приглушенный серо-синий для второстепенного текста */
     --text-online: #4ade80;     /* Приятный зеленый для статуса online */
-    
+
     /* Фирменные акцентные цвета */
     --accent-primary: #0ea5e9;  /* Основной синий */
     --accent-hover: #38bdf8;    /* Светлый синий для наведения */
     --accent-active: #0284c7;   /* Глубокий синий для активных элементов */
-    
+
     /* Градиенты */
     --grad-avatar: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
     --grad-outgoing: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    
+
     /* Фоны (Стекломорфизм с синеватым оттенком) */
     --bg-app: radial-gradient(circle at center, #0b192c 0%, #000000 100%);
     --bg-glass-base: rgba(15, 23, 42, 0.4);       /* Общий фон контейнера */
     --bg-panel-dark: rgba(0, 0, 0, 0.35);         /* Темные панели (сайдбары, хедеры) */
-    
+
     /* Состояния наведения и активные элементы */
     --bg-hover-light: rgba(255, 255, 255, 0.05);  /* Hover папок и чатов */
     --bg-active-blue: rgba(14, 165, 233, 0.12);   /* Активная папка (другой оттенок) */
     --bg-incoming: rgba(255, 255, 255, 0.06);     /* Фон входящего сообщения */
-    
+
     /* Границы */
     --border-subtle: 1px solid rgba(255, 255, 255, 0.04);
     --border-light: 1px solid rgba(255, 255, 255, 0.08);
-    
+
     /* Анимации */
     --transition-main: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -48,6 +48,33 @@
     box-sizing: border-box;
     color: var(--text-main);
     font-family: var(--font-main);
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Запрещаем скролл всей страницы */
+}
+
+.web-app-body {
+    background: var(--bg-app); /* Применяем твой градиент из переменных */
+}
+
+.app-container {
+    display: flex; /* Выстраивает sidebar, chats и chat-window в одну линию */
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Фикс для основных блоков, чтобы они занимали всю высоту контейнера */
+.sidebar, .chats, .chat-window {
+    height: 100% !important;
+}
+
+a {
+    text-decoration: none;
 }
 
 button {
@@ -71,40 +98,48 @@ input {
 /* =========================================
    2. ЛЕЙАУТ ПРИЛОЖЕНИЯ
    ========================================= */
-.web-app-body {
-    background: var(--bg-app);
-    height: 100vh;
-    overflow: hidden;
+
+/* Аватар-заглушка (старый `.avatar-circle`) */
+.chat-header .avatar-circle {
+    width: 45px;
+    height: 45px;
+    min-width: 45px; /* Чтобы не сжималась */
+    border-radius: 50%;
+    overflow: hidden; /* Обрезает всё, что выходит за рамки круга */
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #2b3035; /* Цвет фона для кружка без фото */
 }
 
-.app-container {
-    width: 100vw;
-    height: 100vh;
-    background: var(--bg-glass-base);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: var(--border-light);
-    display: flex;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+/* Делаем так, чтобы любая картинка идеально вписывалась в кружок */
+.avatar-circle .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Заполняет круг, не сплющивая лицо */
+    display: block;
 }
 
-.avatar-circle {
+/* НОВОЕ: Реальное изображение аватара */
+.avatar-image {
     width: 40px;
     height: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    border-radius: 50%;
-    background: var(--grad-avatar);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #fff;
-    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.3);
+    border-radius: 50%; /* Всегда круглый */
+    object-fit: cover; /* Чтобы не растягивалась */
+    flex-shrink: 0;
+}
+
+/* Размеры для больших аватарок (в профиле) */
+.avatar-image.large {
+    width: 80px;
+    height: 80px;
+}
+
+/* Обертка превью в модалке (чтобы JS мог заменить circle на img) */
+.avatar-preview-wrapper {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 12px;
 }
 
 /* =========================================
@@ -124,6 +159,7 @@ input {
     justify-content: space-between;
 }
 
+
 /* ========================================= */
 /* БОКОВЫЕ КНОПКИ (Бургер, Настройки, Выход) */
 /* ========================================= */
@@ -134,7 +170,7 @@ input {
 }
 
 .burger-menu, .settings-btn, .quit-container {
-    height: 75px; 
+    height: 75px;
     width: 100%;
     font-size: 24px;
     color: var(--text-muted); /* Тусклый цвет по умолчанию */
@@ -305,7 +341,7 @@ input {
 
 /* Бирюзовый цвет для кнопки отправки, как на скриншоте */
 .send-btn {
-    color: #1abc9c !important; 
+    color: #1abc9c !important;
 }
 .send-btn:hover {
     color: #2ecc71 !important;
@@ -387,7 +423,7 @@ input {
     align-items: center;
     height: 76px;
     padding: 0 20px; /* Жестко фиксируем отступ */
-    gap: 15px; 
+    gap: 15px;
     cursor: pointer;
     border-bottom: var(--border-subtle);
     transition: var(--transition-main);
@@ -584,7 +620,7 @@ input {
 
 /* Убираем синюю полоску в свернутом виде (чтобы не сдвигать аватар) */
 .chats.compact .chat-item {
-    border-left-color: transparent; 
+    border-left-color: transparent;
 }
 .chats.compact .chat-item.active {
     border-left-color: var(--accent-primary);
@@ -671,7 +707,7 @@ button,
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.4); 
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: flex;
@@ -690,12 +726,12 @@ button,
 
 .modal-content {
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px); 
+    backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 24px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    
+
     padding: 40px 30px;
     width: 360px;
     text-align: center;
@@ -710,7 +746,7 @@ button,
 .modal-content h3 {
     margin-bottom: 15px;
     font-size: 1.5rem;
-    color: white; 
+    color: white;
     letter-spacing: 1px;
 }
 
@@ -766,25 +802,25 @@ button,
    ========================================= */
 .media-picker {
     position: absolute;
-    bottom: 80px; 
-    right: 20px; 
-    transform-origin: bottom right; 
+    bottom: 80px;
+    right: 20px;
+    transform-origin: bottom right;
     width: 340px;
     height: 420px;
-    
+
     /* УЛУЧШЕННЫЙ ГЛАССМОРФИЗМ */
     background: rgba(10, 15, 25, 0.85); /* Глубокий темный фон */
     backdrop-filter: blur(25px) saturate(180%); /* Сильное размытие и легкая насыщенность */
     -webkit-backdrop-filter: blur(25px) saturate(180%);
-    
+
     border: 1px solid rgba(255, 255, 255, 0.08); /* Тонкая светлая рамка */
     border-radius: 16px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); /* Глубокая тень */
-    
+
     display: flex;
     flex-direction: column;
     z-index: 100;
-    
+
     opacity: 0;
     pointer-events: none;
     transform: translateY(15px) scale(0.95);
@@ -822,7 +858,7 @@ button,
 }
 
 .media-tab.active {
-    color: var(--accent-primary); 
+    color: var(--accent-primary);
     border-bottom-color: var(--accent-primary);
 }
 
@@ -831,7 +867,7 @@ button,
     flex: 1;
     overflow-y: auto;
     padding: 15px;
-    
+
     /* Кастомный тонкий скроллбар */
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
@@ -929,7 +965,7 @@ html { font-size: 17px; }
    11. СКРЫТИЕ СИСТЕМНЫХ СКРОЛЛБАРОВ
    ========================================= */
 .messages-container, .chats-list {
-    -ms-overflow-style: none; scrollbar-width: none; 
+    -ms-overflow-style: none; scrollbar-width: none;
 }
 .messages-container::-webkit-scrollbar, .chats-list::-webkit-scrollbar {
     display: none;
@@ -939,58 +975,61 @@ html { font-size: 17px; }
    12. КОНТЕКСТНЫЕ МЕНЮ (ПРАВЫЙ КЛИК)
    ========================================= */
 .custom-context-menu {
-    position: fixed;
-    /* УЛУЧШЕННЫЙ ГЛАССМОРФИЗМ */
-    background: rgba(20, 22, 26, 0.9);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px; 
-    padding: 6px 0; 
-    width: 220px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); 
-    z-index: 9999;
-    opacity: 0; pointer-events: none; 
-    transform: scale(0.95); transform-origin: top left;
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    position: fixed; /* Фиксируем относительно окна */
+    display: none;
+    background: #1f2937; /* Глубокий темный цвет */
+    border: 1px solid #374151;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    z-index: 9999; /* Максимальный приоритет */
+    min-width: 180px;
+    padding: 4px;
+    backdrop-filter: blur(10px); /* Модный эффект размытия */
 }
 .custom-context-menu.active { opacity: 1; pointer-events: all; transform: scale(1); }
 
 .ctx-item {
-    padding: 10px 15px; font-size: 0.95rem; color: #dbdee1; cursor: pointer;
-    display: flex; align-items: center; gap: 10px; transition: background 0.2s;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f3f4f6;
+    transition: background 0.1s;
 }
-.ctx-item:hover { background: rgba(14, 165, 233, 0.15); color: white; }
+.ctx-item:hover {
+    background: #374151;
+}
 .ctx-item.danger:hover { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 
 /* =========================================
    13. ПАНЕЛЬ НАСТРОЕК (НЕЗАВИСИМАЯ И СТЕКЛЯННАЯ)
    ========================================= */
 .settings-sidebar {
-    position: absolute; 
-    top: 0; 
+    position: absolute;
+    top: 0;
     left: 70px; /* Отступ ровно на ширину левой панели (.sidebar) */
-    width: 350px; 
+    width: 350px;
     height: 100%;
-    
+
     /* УЛУЧШЕННЫЙ ГЛАССМОРФИЗМ */
     background: rgba(15, 18, 25, 0.88); /* Темный, глубокий фон */
     backdrop-filter: blur(30px) saturate(150%); /* Максимальное размытие */
     -webkit-backdrop-filter: blur(30px) saturate(150%);
-    
+
     border-right: 1px solid rgba(255, 255, 255, 0.06);
-    z-index: 90; 
-    display: flex; 
+    z-index: 90;
+    display: flex;
     flex-direction: column;
-    
-    transform: translateX(-150%); 
+
+    transform: translateX(-150%);
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s;
 }
 .settings-sidebar.active { transform: translateX(0); box-shadow: 20px 0 50px rgba(0, 0, 0, 0.6); }
 
 .settings-header {
-    display: flex; align-items: center; padding: 26px 25px; 
+    display: flex; align-items: center; padding: 26px 25px;
     background: transparent; border-bottom: var(--border-subtle);
 }
 .settings-header h3 { font-size: 1.2rem; font-weight: 600; }
@@ -1014,8 +1053,8 @@ html { font-size: 17px; }
 }
 .settings-item:hover { background: var(--bg-hover-light); color: var(--accent-hover); }
 
-.settings-item .icon { 
-    margin-right: 15px; 
+.settings-item .icon {
+    margin-right: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1057,29 +1096,29 @@ html { font-size: 17px; }
 
 /* Сама панель настроек */
 .settings-sidebar {
-    position: absolute; 
-    top: 0; 
+    position: absolute;
+    top: 0;
     left: 0; /* ТЕПЕРЬ ВЫЕЗЖАЕТ ОТ САМОГО ЛЕВОГО КРАЯ */
-    width: 350px; 
+    width: 350px;
     height: 100%;
-    
+
     /* Глубокий глассморфизм */
-    background: rgba(15, 18, 25, 0.88); 
-    backdrop-filter: blur(30px) saturate(150%); 
+    background: rgba(15, 18, 25, 0.88);
+    backdrop-filter: blur(30px) saturate(150%);
     -webkit-backdrop-filter: blur(30px) saturate(150%);
-    
+
     border-right: 1px solid rgba(255, 255, 255, 0.06);
     z-index: 200; /* ПОВЕРХ ОВЕРЛЕЯ (150) И САЙДБАРА (100) */
-    display: flex; 
+    display: flex;
     flex-direction: column;
-    
+
     transform: translateX(-100%); /* Прячем ровно за левой границей */
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s;
 }
 
-.settings-sidebar.active { 
-    transform: translateX(0); 
-    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.6); 
+.settings-sidebar.active {
+    transform: translateX(0);
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.6);
 }
 
 /* =========================================
@@ -1152,18 +1191,18 @@ html { font-size: 17px; }
     bottom: 85px; /* Чуть выше панели ввода */
     left: 20px;
     width: 220px;
-    
+
     /* Твой фирменный глассморфизм с затемнением */
     background: rgba(15, 18, 25, 0.9);
     backdrop-filter: blur(25px) saturate(160%);
     -webkit-backdrop-filter: blur(25px) saturate(160%);
-    
+
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 8px 0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     z-index: 100;
-    
+
     /* Анимация появления */
     opacity: 0;
     visibility: hidden;
@@ -1203,3 +1242,539 @@ html { font-size: 17px; }
     font-size: 0.95rem;
     color: var(--text-main);
 }
+
+/* Стили для сообщения об отсутствии чатов */
+.empty-chats-message {
+    text-align: center;
+    padding: 20px;
+    color: #6b7280;
+    font-size: 14px;
+    transition: opacity 0.3s ease;
+}
+
+/* Скрываем это сообщение, когда панель в компактном режиме */
+.chats.compact .empty-chats-message {
+    display: none;
+}
+
+/* =========================================
+   10. ОКНО "МОЙ АККАУНТ"
+   ========================================= */
+.account-modal-content {
+    width: 400px;
+    max-width: 90%;
+    text-align: left;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #fff;
+}
+
+.avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.upload-btn {
+    margin-top: 12px;
+    color: #3b82f6;
+    cursor: pointer;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.upload-btn:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+.account-form .input-group {
+    margin-bottom: 15px;
+}
+
+.account-form label {
+    display: block;
+    margin-bottom: 6px;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.account-form input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.account-form input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.readonly-input {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* =========================================
+   16. ОКНО РЕДАКТОРА (CROPPER.JS)
+   ========================================= */
+.cropper-modal-content {
+    width: 500px;
+    max-width: 95%;
+}
+
+.cropper-container {
+    width: 100%;
+    height: 400px; /* Фиксированная высота для редактора */
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+/* Ограничиваем картинку внутри, чтобы не вылезала пока Cropper не загрузится */
+#imageToCrop {
+    max-width: 100%;
+    display: block;
+}
+
+/* ХИТРОСТЬ: Делаем маску круга поверх квадратной области обрезки */
+/* Переопределяем стили Cropper.js */
+
+.cropper-view-box,
+.cropper-face {
+    border-radius: 50%; /* Делаем область видимости круглой */
+    box-shadow: 0 0 0 1px #3b82f6; /* Тонкая синяя обводка круга */
+    outline: none !important;
+}
+
+/* Затемняем всё, что ВНЕ круга обрезки */
+.cropper-modal {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    opacity: 1 !important;
+}
+
+/* Делаем квадратную рамку невидимой, оставляем только круг */
+.cropper-dashed,
+.cropper-point,
+.cropper-line {
+    display: none !important;
+}
+
+.search-results {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--bg-panel-dark);
+}
+
+.search-section-title {
+    padding: 15px 20px 10px;
+    font-size: 0.8rem;
+    color: var(--accent-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+/* Используем те же стили, что и для обычных чатов */
+.search-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 15px;
+    cursor: pointer;
+    transition: var(--transition-main);
+}
+
+.search-item:hover {
+    background: var(--bg-hover-light);
+}
+/* Контейнер для времени и статуса */
+.message-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 4px;
+    margin-left: 4px;
+}
+
+/* Стили SVG иконок */
+.status-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.5); /* Серый цвет для доставленного */
+    transition: var(--transition-main);
+}
+
+.status-icon.read {
+    color: #38bdf8; /* Голубой цвет для прочитанного (var(--accent-hover)) */
+}
+
+.checks-svg {
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.3s ease;
+}
+
+.checks-svg.read {
+    color: #38bdf8; /* Твой акцентный цвет */
+}
+
+.check-double {
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    animation: drawCheck 0.4s ease forwards;
+}
+
+@keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+}
+
+/* Анимация появления сообщения */
+@keyframes messageAppearing {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.message {
+    /* Применяем анимацию ко всем сообщениям при их создании */
+    animation: messageAppearing 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    will-change: transform, opacity;
+}
+
+.message-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 12px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.message-image:hover {
+    transform: scale(1.02);
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.image-preview-content {
+    max-width: 500px;
+    width: 90%;
+}
+
+.image-preview-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 0;
+}
+
+#pastedImageContent {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    object-fit: contain;
+    background: #1a1d21;
+}
+
+#imageCaption {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-main);
+    padding: 12px;
+    resize: none;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+.images-preview-grid {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+    max-height: 300px;
+}
+
+.preview-item {
+    position: relative;
+    flex: 0 0 150px; /* Фиксированная ширина превью */
+    height: 150px;
+}
+
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+}
+
+/* Стили для скроллбара в галерее */
+.images-preview-grid::-webkit-scrollbar {
+    height: 6px;
+}
+.images-preview-grid::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 10px;
+}
+
+.add-more-item {
+    flex: 0 0 150px;
+    height: 150px;
+    border: 2px dashed var(--border-light);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: var(--transition-main);
+    gap: 8px;
+}
+
+.add-more-item:hover {
+    border-color: var(--accent-primary);
+    color: var(--text-main);
+    background: var(--bg-hover-light);
+}
+
+.add-more-item i {
+    font-size: 1.5rem;
+}
+
+/* Галерея внутри сообщения */
+.message-gallery {
+    display: grid;
+    /* Умная сетка: если картинка одна — на всю ширину, если много — делятся по 120px */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 4px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 400px; /* Ограничиваем ширину огромных галерей */
+}
+
+.gallery-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.gallery-image:hover {
+    transform: scale(1.03);
+}
+
+/* Если картинка только одна, делаем её больше */
+.message-gallery:has(> :last-child:nth-child(1)) .gallery-image {
+    height: auto;
+    max-height: 300px;
+}
+
+/* Жестко фиксируем размер кружка в списке чатов */
+.chat-item .avatar-circle {
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+    min-height: 45px;
+    position: relative; /* Чтобы точка прилипла к краю */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: visible; /* ВАЖНО: разрешаем точке вылезать за круг */
+}
+
+/* Делаем кружок контейнером для абсолютных элементов */
+.chat-item .avatar-circle {
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+    min-height: 45px;
+    border-radius: 50%;
+    position: relative; /* КРИТИЧЕСКИ ВАЖНО! */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Сама картинка */
+/* Обрезаем картинку, а не контейнер */
+.chat-item .avatar-circle .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%; /* Картинка сама становится кругом */
+}
+
+/* Точка онлайна (отрываем от общего потока) */
+.online-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    background-color: #10b981;
+    border: 3px solid #0b141a; /* Цвет фона твоего меню */
+    border-radius: 50%;
+    z-index: 5;
+}
+
+/* messenger_style.css */
+
+/* Стилизуем саму ссылку-кнопку подтверждения */
+#confirmQuit {
+    background-color: #ef4444; /* Насыщенный красный цвет (Danger) */
+    color: white !important;
+    text-decoration: none; /* Убираем подчеркивание ссылки */
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+}
+
+#confirmQuit:hover {
+    background-color: #dc2626; /* Более темный красный при наведении */
+}
+
+#confirmQuit:active {
+    transform: scale(0.98); /* Эффект нажатия */
+}
+
+/* Стилизуем кнопку "Отмена" для баланса */
+#cancelQuit {
+    background-color: transparent;
+    color: #9ca3af;
+    border: 1px solid #374151;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+#cancelQuit:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+    border-color: #4b5563;
+}
+
+/* Контейнер для кнопок в модалке */
+#quitModal .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* messenger_style.css */
+
+.custom-context-menu {
+    position: fixed;
+    display: none; /* Скрыто по умолчанию */
+    background: #2b3035; /* Темный фон под тему приложения */
+    border: 1px solid #374151;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 2000;
+    min-width: 160px;
+    padding: 6px 0;
+    overflow: hidden;
+    animation: menuFadeIn 0.15s ease-out;
+}
+
+@keyframes menuFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.ctx-item {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #e5e7eb;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.ctx-item:hover {
+    background-color: #3d444b;
+}
+
+.ctx-item.danger {
+    color: #ef4444; /* Красный для удаления */
+}
+
+.ctx-item.danger:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* messenger_style.css */
+
+.message {
+    display: flex;
+    margin-bottom: 8px;
+    padding: 4px 14px; /* Добавляем небольшие отступы для удобства */
+    cursor: default;
+    transition: background-color 0.2s; /* Эффект при наведении */
+}
+
+/* Подсвечиваем всю строку при наведении, чтобы юзер видел зону клика */
+.message:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Выравнивание содержимого (пузыря) */
+.message.outgoing { justify-content: flex-end; }
+.message.incoming { justify-content: flex-start; }
