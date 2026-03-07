@@ -191,4 +191,127 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+    // =========================================
+    // 6. ЛОГИКА ОКНА НАСТРОЕК
+    // =========================================
+    const openSettingsBtn = document.getElementById('openSettings');
+    const settingsSidebar = document.getElementById('settingsSidebar');
+    const settingsOverlay = document.getElementById('settingsOverlay'); // Находим наш новый оверлей
+
+    if (openSettingsBtn && settingsSidebar && settingsOverlay) {
+        // Открытие/закрытие по клику на шестеренку
+        openSettingsBtn.addEventListener('click', () => {
+            settingsSidebar.classList.toggle('active');
+            settingsOverlay.classList.toggle('active');
+        });
+
+        // Закрытие при клике по размытому фону (оверлею)
+        settingsOverlay.addEventListener('click', () => {
+            settingsSidebar.classList.remove('active');
+            settingsOverlay.classList.remove('active');
+        });
+    }
+
+    // =========================================
+    // 7. КОНТЕКСТНЫЕ МЕНЮ (ПРАВЫЙ КЛИК)
+    // =========================================
+    const messageCtxMenu = document.getElementById('messageCtxMenu');
+    const chatCtxMenu = document.getElementById('chatCtxMenu');
+    
+    // Универсальная функция для показа меню в нужном месте
+    const showContextMenu = (e, menuElement) => {
+        e.preventDefault(); // Отключаем стандартное меню браузера
+        
+        // Скрываем все открытые меню
+        messageCtxMenu.classList.remove('active');
+        chatCtxMenu.classList.remove('active');
+
+        // Вычисляем координаты, чтобы меню не вылезало за края экрана
+        let x = e.clientX;
+        let y = e.clientY;
+        const menuWidth = 220; 
+        const menuHeight = menuElement.offsetHeight;
+
+        if (x + menuWidth > window.innerWidth) x = window.innerWidth - menuWidth - 10;
+        if (y + menuHeight > window.innerHeight) y = window.innerHeight - menuHeight - 10;
+
+        menuElement.style.left = `${x}px`;
+        menuElement.style.top = `${y}px`;
+        menuElement.classList.add('active');
+    };
+
+    // Слушаем правый клик на контейнере с сообщениями
+    if (messagesContainer && messageCtxMenu) {
+        messagesContainer.addEventListener('contextmenu', (e) => {
+            // Ищем ближайший элемент сообщения, по которому кликнули
+            const messageElement = e.target.closest('.message');
+            if (messageElement) {
+                showContextMenu(e, messageCtxMenu);
+            }
+        });
+    }
+
+    // Слушаем правый клик на списке чатов
+    const chatsList = document.querySelector('.chats-list');
+    if (chatsList && chatCtxMenu) {
+        chatsList.addEventListener('contextmenu', (e) => {
+            // Ищем ближайший чат, по которому кликнули
+            const chatElement = e.target.closest('.chat-item');
+            if (chatElement) {
+                showContextMenu(e, chatCtxMenu);
+            }
+        });
+    }
+
+    // Скрываем меню при клике левой кнопкой мыши в любом месте
+    document.addEventListener('click', (e) => {
+        if (messageCtxMenu && messageCtxMenu.classList.contains('active')) {
+            messageCtxMenu.classList.remove('active');
+        }
+        if (chatCtxMenu && chatCtxMenu.classList.contains('active')) {
+            chatCtxMenu.classList.remove('active');
+        }
+    });
+    // =========================================
+    // 8. ЛОГИКА МЕНЮ ВЛОЖЕНИЙ (СКРЕПКА)
+    // =========================================
+    const attachBtn = document.querySelector('.attach-btn');
+    const attachmentMenu = document.getElementById('attachmentMenu');
+
+    if (attachBtn && attachmentMenu) {
+        // Открыть/закрыть меню по клику на скрепку
+        attachBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Не даем клику уйти дальше и сразу закрыть меню
+            attachmentMenu.classList.toggle('active');
+        });
+
+        // Закрыть меню при клике в любое другое место
+        document.addEventListener('click', (e) => {
+            if (!attachmentMenu.contains(e.target) && !attachBtn.contains(e.target)) {
+                attachmentMenu.classList.remove('active');
+            }
+        });
+    }
+
+    // =========================================
+    // 9. ЛОГИКА ПУСТОГО СОСТОЯНИЯ И ПЕРЕКЛЮЧЕНИЯ ЧАТОВ
+    // =========================================
+    const chatItems = document.querySelectorAll('.chat-item');
+    const emptyState = document.getElementById('emptyState');
+
+    if (chatItems.length > 0 && emptyState) {
+        chatItems.forEach(chat => {
+            chat.addEventListener('click', () => {
+                // 1. Убираем активный класс у всех чатов
+                chatItems.forEach(c => c.classList.remove('active'));
+                
+                // 2. Делаем кликнутый чат активным
+                chat.classList.add('active');
+                
+                // 3. Прячем пустое состояние (открываем переписку)
+                emptyState.classList.add('hidden');
+            });
+        });
+    }
+    
 });

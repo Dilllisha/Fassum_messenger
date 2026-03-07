@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация — Fassum</title>
+    <link rel="stylesheet" href="styles/auth_style.css">
+    <link rel="preload" href="fonts/Forum-Regular.ttf" as="font" type="font/ttf" crossorigin>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="bg-circle circle-1"></div>
+        <div class="bg-circle circle-2"></div>
+
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 class="logo">Fassum</h1>
+                <h2>Создать аккаунт</h2>
+                <p>Начните общаться безопасно прямо сейчас</p>
+            </div>
+
+            <form id="registerForm" class="auth-form">
+                <div class="input-group">
+                    <label for="username">Имя пользователя (Тег)</label>
+                    <input type="text" id="username" placeholder="Только латиница, без пробелов" required autocomplete="off">
+                    <span class="error-message" id="usernameError">От 3 до 10 символов, только латиница и цифры!</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" placeholder="Ваш почтовый ящик" required autocomplete="email">
+                    <span class="error-message" id="emailError">Введите корректный email адрес!</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" placeholder="От 6 до 13 символов" required autocomplete="new-password">
+                    <span class="error-message" id="passwordStrengthError">Нужны заглавная, строчная буквы и спецсимвол!</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Повторите пароль</label>
+                    <input type="password" id="confirmPassword" placeholder="Пароль еще раз" required autocomplete="new-password">
+                    <span class="error-message" id="passwordError">Пароли не совпадают!</span>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span class="btn-text">Зарегистрироваться</span>
+                    <span class="loader" style="display: none;"></span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Уже есть аккаунт? <a href="login.html" class="auth-link">Войти</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/auth.js"></script>
+</body>
+</html>
