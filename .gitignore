@@ -1,3 +1,4 @@
 # Project files
 .vscode/
-.idea/
+fassum_messenger/media
+fassum_messenger/db.sqlite3
