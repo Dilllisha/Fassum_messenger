@@ -22,6 +22,10 @@ urlpatterns = [
     path('api/ping/', ping_user, name='ping_user'),
     path('api/set-typing/', set_typing, name='set_typing'),
     path('api/delete-message/<int:message_id>/', delete_message, name='delete_message'),
+    path('api/set-offline/', set_offline, name='set_offline'),
+    path('api/get-chats-list/', get_chats_list, name='get_chats_list'),
+    path('api/get-folders-list/', get_folders_list, name='get_folders_list'),
+    path('api/create-folder/', create_folder, name='create_folder'),
 ]
 
 if settings.DEBUG:

@@ -93,9 +93,11 @@
                         </div>
                     </div>
                     <div class="chat-meta">
-                        {% if chat.last_message %}
-                            <span class="time">{{ chat.last_message.created_at|date:"H:i" }}</span>
-                        {% endif %}
+                        <div class="message-time">{{ chat.last_message_time }}</div>
+
+                        <div class="unread-count" {% if chat.unread_count == 0 %}style="display: none;"{% endif %}>
+                            {{ chat.unread_count }}
+                        </div>
                     </div>
                 </div>
                 {% empty %}

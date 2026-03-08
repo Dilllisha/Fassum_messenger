@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================
     window.currentChatId = null;
     window.lastMsgId = 0;
+    window.currentFolderId = 'all';
     let pollingTimer = null;
     let pendingFiles = [];
 
@@ -25,14 +26,14 @@ function setFavicon(url) {
     if (oldLink) {
         document.head.removeChild(oldLink); // Удаляем старую иконку
     }
-    
+
     let newLink = document.createElement('link');
     newLink.id = 'app-favicon';
     newLink.rel = 'icon';
     newLink.type = 'image/svg+xml'; // Обязательно указываем, что это SVG
     // Добавляем параметр со временем, чтобы сбить кэш браузера
-    newLink.href = url + '?v=' + new Date().getTime(); 
-    
+    newLink.href = url + '?v=' + new Date().getTime();
+
     document.head.appendChild(newLink); // Вставляем новую
 }
 
@@ -43,10 +44,29 @@ function setFavicon(url) {
 
         if (isTyping) {
             statusEl.innerText = 'печатает...';
-            statusEl.style.color = '#10b981'; // Выделяем активное действие цветом
+            statusEl.style.color = '#10b981';
         } else {
             statusEl.innerText = statusText;
             statusEl.style.color = (statusText === 'online') ? '#10b981' : '#9ca3af';
+        }
+
+        const activeChat = document.querySelector(`.chat-item[data-id="${window.currentChatId}"]`);
+        if (activeChat) {
+            // --- НОВОЕ: Запоминаем свежий статус в HTML, чтобы при переключении не было морганий ---
+            activeChat.setAttribute('data-status', statusText);
+
+            const avatarCircle = activeChat.querySelector('.avatar-circle');
+            let dot = avatarCircle.querySelector('.online-dot');
+
+            if (statusText === 'online' || isTyping) {
+                if (!dot) {
+                    dot = document.createElement('div');
+                    dot.className = 'online-dot';
+                    avatarCircle.appendChild(dot);
+                }
+            } else {
+                if (dot) dot.remove();
+            }
         }
     };
 
@@ -84,6 +104,10 @@ function setFavicon(url) {
 
         messagesContainer.appendChild(msgDiv);
 
+        if (!msg.is_my && document.visibilityState === 'visible' && document.hasFocus()) {
+            markChatAsRead(window.currentChatId);
+        }
+
         if (msg.id > window.lastMsgId) window.lastMsgId = msg.id;
 
         if (scroll) {
@@ -111,28 +135,22 @@ function setFavicon(url) {
         fetch(`/api/messages/${window.currentChatId}/?last_id=${window.lastMsgId}`)
             .then(res => res.json())
             .then(data => {
-                .then(data => {
                 if (data.status === 'ok') {
+                    // 1. Отрисовка новых входящих сообщений
                     if (data.messages.length > 0) {
                         data.messages.forEach(msg => renderMessage(msg));
-                        
-                        // НОВАЯ ЛОГИКА: Если вкладка неактивна, включаем уведомление
-                        if (document.visibilityState === 'hidden') {
-                            // ИСПОЛЬЗУЕМ НАШУ ФУНКЦИЮ
-                            setFavicon('/static/images/favicon_alert.svg');
-                            
-                            document.title = '(1) Новое сообщение - Fassum';
+                        // ... логика уведомлений и фавиконки ...
+                    }
 
-                            const sound = document.getElementById('notificationSound');
-                            if (sound) {
-                                sound.play().catch(err => console.log("Звук заблокирован:", err));
-                            }
-                        }
-                    // ... остальной код (read_ids, status_text) остается без изменений                    if (data.read_ids && data.read_ids.length > 0) {
+                    // 2. НОВОЕ: ОБНОВЛЯЕМ ГАЛОЧКИ ДЛЯ ТВОИХ ОТПРАВЛЕННЫХ СООБЩЕНИЙ
+                    // Если сервер прислал ID сообщений, которые собеседник только что прочитал
+                    if (data.read_ids && data.read_ids.length > 0) {
                         data.read_ids.forEach(id => {
+                            // Ищем на странице ТВОЕ исходящее сообщение с этим ID
                             const msgEl = document.querySelector(`.message.outgoing[data-id="${id}"]`);
                             if (msgEl) {
                                 const container = msgEl.querySelector('.status-container');
+                                // Если там еще нет двойной галочки — рисуем её
                                 if (container && !container.querySelector('.check-double')) {
                                     container.innerHTML = `
                                         <svg class="checks-svg read" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -144,16 +162,139 @@ function setFavicon(url) {
                         });
                     }
 
-                    // Обновляем статус с сервера, если он изменился во время переписки
+                    // 3. Обновляем статус онлайн/печатает
                     updateChatStatus(data.other_user_status, data.is_typing);
 
-                    if (document.querySelector('.chat-window:hover')) {
+                    // 4. Помечаем прочитанным, если окно активно
+                    if (document.visibilityState === 'visible' && document.hasFocus()) {
                         markChatAsRead(window.currentChatId);
                     }
                 }
             })
             .catch(err => console.error("Ошибка поллинга:", err));
     };
+
+    // --- НОВОЕ: Глобальное обновление списка чатов ---
+    const pollChatsList = () => {
+        fetch(`/api/get-chats-list/?folder_id=${window.currentFolderId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    let isNewChatAdded = false;
+
+                    data.chats.forEach((chatData, index) => {
+                        let chatEl = document.querySelector(`.chat-item[data-id="${chatData.id}"]`);
+
+                        // 1. ЕСЛИ ЭТО НОВЫЙ ЧАТ
+                        if (!chatEl) {
+                            chatEl = document.createElement('div');
+                            chatEl.className = 'chat-item';
+                            chatEl.setAttribute('data-id', chatData.id);
+                            chatEl.setAttribute('data-status', chatData.status_text);
+
+                            // Проверяем статус печати для нового элемента
+                            const displayMessage = chatData.is_typing ? 'печатает...' : chatData.last_message;
+                            const messageStyle = chatData.is_typing ? 'style="color: #10b981; font-weight: 500;"' : '';
+
+                            chatEl.innerHTML = `
+                                <div class="avatar-circle">
+                                    <img src="${chatData.avatar_url}" class="avatar-image">
+                                    ${chatData.is_online ? '<div class="online-dot"></div>' : ''}
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">${chatData.name}</div>
+                                    <div class="last-message" ${messageStyle}>${displayMessage}</div>
+                                </div>
+                                <div class="chat-meta">
+                                    <div class="message-time">${chatData.time}</div>
+                                    <div class="unread-count" style="display: ${chatData.unread > 0 ? 'inline-block' : 'none'}">${chatData.unread}</div>
+                                </div>
+                            `;
+                            chatsListContainer.appendChild(chatEl);
+                            isNewChatAdded = true;
+                        }
+                        // 2. ЕСЛИ ЧАТ УЖЕ ЕСТЬ - ОБНОВЛЯЕМ ДАННЫЕ
+                        else {
+                            const lastMsgEl = chatEl.querySelector('.last-message');
+
+                            // --- ЛОГИКА ПОДМЕНЫ ТЕКСТА НА "ПЕЧАТАЕТ" ---
+                            if (chatData.is_typing) {
+                                lastMsgEl.innerText = 'печатает...';
+                                lastMsgEl.style.color = '#10b981'; // Зеленый цвет
+                                lastMsgEl.style.fontWeight = '500';
+                            } else {
+                                lastMsgEl.innerText = chatData.last_message;
+                                lastMsgEl.style.color = ''; // Сброс к обычному цвету
+                                lastMsgEl.style.fontWeight = '';
+                            }
+
+                            const timeEl = chatEl.querySelector('.message-time');
+                            if (timeEl) timeEl.innerText = chatData.time;
+
+                            const unreadBadge = chatEl.querySelector('.unread-count');
+                            if (unreadBadge) {
+                                if (chatData.unread > 0 && chatData.id != window.currentChatId) {
+                                    unreadBadge.innerText = chatData.unread;
+                                    unreadBadge.style.display = 'inline-block';
+                                } else {
+                                    unreadBadge.style.display = 'none';
+                                }
+                            }
+                        }
+
+                        chatEl.style.order = index;
+                    });
+
+                    if (isNewChatAdded && typeof initChatHandlers === 'function') {
+                        initChatHandlers();
+                        emptyState?.classList.add('hidden');
+                    }
+                }
+            })
+            .catch(err => console.error("Ошибка поллинга списка чатов:", err));
+    };
+
+    // --- НОВАЯ ФУНКЦИЯ: Поллинг списка папок ---
+    const pollFoldersList = () => {
+        fetch('/api/get-folders-list/')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    const container = document.querySelector('.folders-container');
+                    if (!container) return;
+
+                    // Сохраняем кнопку "Все чаты", остальное очищаем
+                    const allChatsBtn = container.querySelector('.folder-item[data-id="all"]');
+                    container.innerHTML = '';
+                    if (allChatsBtn) container.appendChild(allChatsBtn);
+
+                    data.folders.forEach(f => {
+                        const item = document.createElement('div');
+                        item.className = `folder-item ${window.currentFolderId == f.id ? 'active' : ''}`;
+                        item.setAttribute('data-id', f.id);
+                        item.innerHTML = `
+                            <div class="folder-icon">${f.icon || '📁'}</div>
+                            <div class="folder-label">${f.name}</div>
+                        `;
+
+                        // Клик по папке
+                        item.onclick = () => {
+                            document.querySelectorAll('.folder-item').forEach(el => el.classList.remove('active'));
+                            item.classList.add('active');
+                            window.currentFolderId = f.id;
+                            pollChatsList(); // Мгновенно обновляем чаты в этой папке
+                        };
+                        container.appendChild(item);
+                    });
+                }
+            });
+    };
+
+    // Запускаем глобальный поллинг каждые 4 секунды
+    setInterval(pollChatsList, 4000);
+
+    setInterval(pollFoldersList, 10000);
+    pollFoldersList();
 
     const loadMessages = (chatId) => {
         window.lastMsgId = 0;
@@ -165,6 +306,9 @@ function setFavicon(url) {
                 if (data.status === 'ok') {
                     messagesContainer.innerHTML = '';
                     data.messages.forEach(msg => renderMessage(msg, false));
+
+                    // --- НОВОЕ: Моментально применяем 100% точный статус с сервера ---
+                    updateChatStatus(data.other_user_status, data.is_typing);
 
                     setTimeout(() => messagesContainer.scrollTop = messagesContainer.scrollHeight, 150);
 
@@ -187,36 +331,7 @@ function setFavicon(url) {
     let typingTimer;
     let isTypingSent = false;
 
-    // Слушаем вставку (Ctrl+V) на уровне всего документа
-    document.addEventListener('paste', (e) => {
-        // Если ни один чат не выбран, игнорируем вставку
-        if (!window.currentChatId) return;
-
-        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-        let found = false;
-
-        for (let item of items) {
-            if (item.type.indexOf('image') !== -1) {
-                found = true;
-                e.preventDefault(); // Блокируем стандартное поведение только для картинок
-                pendingFiles.push(item.getAsFile());
-            }
-        }
-
-        if (found) {
-            // Копируем текст из инпута только если окно открывается впервые.
-            // Иначе, если мы докидываем вторую картинку, мы затрем уже написанную подпись.
-            if (!imagePreviewModal?.classList.contains('active')) {
-                if (imageCaption && messageInput) {
-                    imageCaption.value = messageInput.value;
-                }
-            }
-
-            imagePreviewModal?.classList.add('active');
-            renderPreviewGrid();
-        }
-    });
-
+    // 1. Сама функция: отправляет статус на сервер
     const sendTypingStatus = (isTyping) => {
         const formData = new FormData();
         formData.append('chat_id', window.currentChatId);
@@ -229,9 +344,38 @@ function setFavicon(url) {
         });
     };
 
+    // 2. Отслеживаем набор текста в инпуте
+    messageInput?.addEventListener('input', () => {
+        if (!window.currentChatId) return;
+
+        // Если статус еще не отправлен — отправляем
+        if (!isTypingSent) {
+            sendPing(); // <-- ДОБАВИЛИ: Подтверждаем серверу, что мы онлайн
+            sendTypingStatus(true);
+            isTypingSent = true;
+        }
+
+        clearTimeout(typingTimer);
+
+        typingTimer = setTimeout(() => {
+            sendTypingStatus(false);
+            isTypingSent = false;
+        }, 1500);
+    });
+
+    // 3. Отправка самого сообщения
     const sendTextMessage = () => {
         const text = messageInput.value.trim();
         if (!text || !window.currentChatId) return;
+
+        // Сразу гасим статус "печатает"
+        clearTimeout(typingTimer);
+        if (isTypingSent) {
+            sendTypingStatus(false);
+            isTypingSent = false;
+        }
+
+        sendPing(); // Подтверждаем онлайн в момент отправки
 
         const formData = new FormData();
         formData.append('chat_id', window.currentChatId);
@@ -245,18 +389,57 @@ function setFavicon(url) {
         .then(res => res.json())
         .then(data => {
             if (data.status === 'ok') {
+                // РИСУЕМ СООБЩЕНИЕ НА ЭКРАНЕ
                 renderMessage({ ...data.message, is_my: true });
+
+                // ОЧИЩАЕМ ПОЛЕ ВВОДА
                 messageInput.value = '';
 
+                // Обновляем текст слева в списке чатов
                 const activeChat = document.querySelector(`.chat-item[data-id="${window.currentChatId}"]`);
                 if (activeChat) activeChat.querySelector('.last-message').innerText = data.message.text;
             }
-        });
+        })
+        .catch(err => console.error("Ошибка отправки:", err));
     };
+        // ... дальше код без изменений
 
+    messageInput?.addEventListener('focus', () => {
+    if (window.currentChatId) {
+        markChatAsRead(window.currentChatId);
+        }
+    });
+
+    // Слушатели кнопок отправки
     document.querySelector('.send-btn')?.addEventListener('click', sendTextMessage);
     messageInput?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendTextMessage();
+    });
+
+    // 4. Слушаем вставку (Ctrl+V) картинок на уровне всего документа
+    document.addEventListener('paste', (e) => {
+        if (!window.currentChatId) return;
+
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        let found = false;
+
+        for (let item of items) {
+            if (item.type.indexOf('image') !== -1) {
+                found = true;
+                e.preventDefault();
+                pendingFiles.push(item.getAsFile());
+            }
+        }
+
+        if (found) {
+            if (!imagePreviewModal?.classList.contains('active')) {
+                if (imageCaption && messageInput) {
+                    imageCaption.value = messageInput.value;
+                }
+            }
+            imagePreviewModal?.classList.add('active');
+            if (typeof renderPreviewGrid === 'function') renderPreviewGrid();
+        }
     });
 
     // =========================================
@@ -549,57 +732,111 @@ function setFavicon(url) {
     // =========================================
 
     let lastActivityTime = Date.now();
+    let lastPingTime = 0; // НОВОЕ: Запоминаем, когда последний раз дергали сервер
     const INACTIVITY_LIMIT = 3 * 60 * 1000; // 3 минуты
-    let isPinging = false; // Защита от спама запросами
+    let isPinging = false;
 
-    const resetActivity = () => { lastActivityTime = Date.now(); };
+    const sendPing = (force = false) => {
+        if (isPinging && !force) return;
 
-    // Отслеживаем движения мыши и нажатия
-    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
-        document.addEventListener(evt, resetActivity)
-    );
-
-    const sendPing = () => {
-        if (isPinging) return; // Если запрос уже летит, не дублируем
-        if (Date.now() - lastActivityTime < INACTIVITY_LIMIT) {
+        if (force || (Date.now() - lastActivityTime < INACTIVITY_LIMIT)) {
             isPinging = true;
+            lastPingTime = Date.now(); // Фиксируем время отправки пинга
+
             fetch('/api/ping/', {
                 method: 'POST',
                 headers: { 'X-CSRFToken': getCSRF() }
             })
             .catch(err => console.error("Ping error:", err))
             .finally(() => {
-                // Разрешаем следующий пинг через небольшую задержку (защита от спама при focus)
                 setTimeout(() => { isPinging = false; }, 2000);
             });
         }
     };
 
-    // Стандартный пинг раз в минуту
-    setInterval(sendPing, 60000);
-    sendPing();
+    const resetActivity = () => {
+        lastActivityTime = Date.now();
+
+        // --- УМНЫЙ ПИНГ ---
+        // Если юзер зашевелил мышкой, и мы не пинговали сервер больше 15 секунд — пингуем!
+        if (Date.now() - lastPingTime > 15000) {
+            sendPing();
+        }
+    };
+
+    // Слушаем активность пользователя
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
+        document.addEventListener(evt, resetActivity)
+    );
+
+    setInterval(sendPing, 60000); // Резервный пинг
+    sendPing(true);
 
     // --- НОВАЯ МАГИЯ: МГНОВЕННЫЙ ОНЛАЙН ПРИ ВОЗВРАЩЕНИИ ---
 
-    // Когда пользователь возвращается на вкладку браузера
+    // 1. Когда возвращаешься на вкладку (переключаешься с другой)
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
             resetActivity();
-            sendPing(); 
-            
-            // ИСПОЛЬЗУЕМ НАШУ ФУНКЦИЮ ДЛЯ СБРОСА
+            sendPing(true); // Принудительно отправляем свой статус "online"
+
             setFavicon('/static/images/favicon.svg');
-            document.title = 'Fassum Web'; 
-            
+            document.title = 'Fassum Web';
+
+            if (window.currentChatId) {
+                checkNewMessages(); // Мгновенно опрашиваем сервер о статусе собеседника
+            }
+        }
+    });
+
+    // 2. Когда кликаешь по свернутому браузеру (например, из другой программы)
+    window.addEventListener('focus', () => {
+        resetActivity();
+        sendPing(true); // Принудительный пинг
+
+        if (window.currentChatId) {
+            checkNewMessages(); // Мгновенный опрос
+        }
+    });
+    // 3. НОВОЕ: Когда окно теряет фокус (кликнул в другую программу или на другой монитор)
+    window.addEventListener('blur', () => {
+        // Мгновенно снимаем статус "печатает...", если он был
+        if (isTypingSent) {
+            clearTimeout(typingTimer);
+            sendTypingStatus(false);
+            isTypingSent = false;
+        }
+    });
+
+    // 4. Когда переключился на совершенно другую вкладку в браузере
+    // 4. Когда переключился на совершенно другую вкладку в браузере
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            if (isTypingSent) {
+                clearTimeout(typingTimer);
+                sendTypingStatus(false);
+                isTypingSent = false;
+            }
+
+            // --- ИСПРАВЛЕНИЕ 403 ОШИБКИ ---
+            // Упаковываем CSRF-токен в тело запроса, так как sendBeacon не поддерживает заголовки
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', getCSRF());
+
+            navigator.sendBeacon('/api/set-offline/', formData);
+            // ------------------------------
+
+        } else if (document.visibilityState === 'visible') {
+            resetActivity();
+            sendPing(true);
+
+            setFavicon('/static/images/favicon.svg');
+            document.title = 'Fassum Web';
+
             if (window.currentChatId) {
                 checkNewMessages();
             }
         }
-    });
-    // 2. Когда пользователь кликает по окну браузера (если оно было открыто на фоне)
-    window.addEventListener('focus', () => {
-        resetActivity();
-        sendPing();
     });
     // =========================================
     // ЛОГИКА ВЫХОДА (QUIT MODAL)
