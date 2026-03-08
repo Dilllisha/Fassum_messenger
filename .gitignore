@@ -1,4 +1,5 @@
 # Project files
 .vscode/
-fassum_messenger/media
-fassum_messenger/db.sqlite3
+db.sqlite3
+media/
+__pycache__/
