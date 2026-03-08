@@ -157,19 +157,34 @@ document.addEventListener('DOMContentLoaded', () => {
     let typingTimer;
     let isTypingSent = false;
 
-    messageInput?.addEventListener('input', () => {
+    // Слушаем вставку (Ctrl+V) на уровне всего документа
+    document.addEventListener('paste', (e) => {
+        // Если ни один чат не выбран, игнорируем вставку
         if (!window.currentChatId) return;
 
-        if (!isTypingSent) {
-            isTypingSent = true;
-            sendTypingStatus(true);
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        let found = false;
+
+        for (let item of items) {
+            if (item.type.indexOf('image') !== -1) {
+                found = true;
+                e.preventDefault(); // Блокируем стандартное поведение только для картинок
+                pendingFiles.push(item.getAsFile());
+            }
         }
 
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(() => {
-            isTypingSent = false;
-            sendTypingStatus(false);
-        }, 3000); // Если 3 секунды ничего не менялось — считаем, что перестал печатать
+        if (found) {
+            // Копируем текст из инпута только если окно открывается впервые.
+            // Иначе, если мы докидываем вторую картинку, мы затрем уже написанную подпись.
+            if (!imagePreviewModal?.classList.contains('active')) {
+                if (imageCaption && messageInput) {
+                    imageCaption.value = messageInput.value;
+                }
+            }
+
+            imagePreviewModal?.classList.add('active');
+            renderPreviewGrid();
+        }
     });
 
     const sendTypingStatus = (isTyping) => {
