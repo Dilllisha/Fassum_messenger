@@ -182,6 +182,9 @@ function setFavicon(url) {
                 if (data.status === 'ok') {
                     let isNewChatAdded = false;
 
+                    // --- НОВОЕ: Собираем ID всех чатов, которые прислал сервер ---
+                    const receivedIds = data.chats.map(chat => String(chat.id));
+
                     data.chats.forEach((chatData, index) => {
                         let chatEl = document.querySelector(`.chat-item[data-id="${chatData.id}"]`);
 
@@ -192,7 +195,6 @@ function setFavicon(url) {
                             chatEl.setAttribute('data-id', chatData.id);
                             chatEl.setAttribute('data-status', chatData.status_text);
 
-                            // Проверяем статус печати для нового элемента
                             const displayMessage = chatData.is_typing ? 'печатает...' : chatData.last_message;
                             const messageStyle = chatData.is_typing ? 'style="color: #10b981; font-weight: 500;"' : '';
 
@@ -217,14 +219,13 @@ function setFavicon(url) {
                         else {
                             const lastMsgEl = chatEl.querySelector('.last-message');
 
-                            // --- ЛОГИКА ПОДМЕНЫ ТЕКСТА НА "ПЕЧАТАЕТ" ---
                             if (chatData.is_typing) {
                                 lastMsgEl.innerText = 'печатает...';
-                                lastMsgEl.style.color = '#10b981'; // Зеленый цвет
+                                lastMsgEl.style.color = '#10b981';
                                 lastMsgEl.style.fontWeight = '500';
                             } else {
                                 lastMsgEl.innerText = chatData.last_message;
-                                lastMsgEl.style.color = ''; // Сброс к обычному цвету
+                                lastMsgEl.style.color = '';
                                 lastMsgEl.style.fontWeight = '';
                             }
 
@@ -242,8 +243,18 @@ function setFavicon(url) {
                             }
                         }
 
+                        // --- НОВОЕ: Обязательно показываем чат, если он был скрыт другой папкой ---
+                        chatEl.style.display = 'flex';
                         chatEl.style.order = index;
                     });
+
+                    // --- НОВОЕ: Прячем все чаты в панели, которых нет в текущей папке ---
+                    document.querySelectorAll('.chat-item').forEach(el => {
+                        if (!receivedIds.includes(el.getAttribute('data-id'))) {
+                            el.style.display = 'none'; // Скрываем лишние
+                        }
+                    });
+                    // ---------------------------------------------------------------------
 
                     if (isNewChatAdded && typeof initChatHandlers === 'function') {
                         initChatHandlers();
@@ -255,6 +266,7 @@ function setFavicon(url) {
     };
 
     // --- НОВАЯ ФУНКЦИЯ: Поллинг списка папок ---
+    // --- НОВАЯ ФУНКЦИЯ: Поллинг списка папок ---
     const pollFoldersList = () => {
         fetch('/api/get-folders-list/')
             .then(res => res.json())
@@ -263,11 +275,33 @@ function setFavicon(url) {
                     const container = document.querySelector('.folders-container');
                     if (!container) return;
 
-                    // Сохраняем кнопку "Все чаты", остальное очищаем
-                    const allChatsBtn = container.querySelector('.folder-item[data-id="all"]');
+                    // 1. Очищаем контейнер полностью
                     container.innerHTML = '';
-                    if (allChatsBtn) container.appendChild(allChatsBtn);
 
+                    // 2. ВСЕГДА СОЗДАЕМ ПАПКУ "ВСЕ ЧАТЫ" ЧЕРЕЗ JS
+                    const allChatsBtn = document.createElement('div');
+                    allChatsBtn.className = `folder-item ${window.currentFolderId === 'all' ? 'active' : ''}`;
+                    allChatsBtn.setAttribute('data-id', 'all');
+
+                    // Красивая SVG-иконка диалога для "Все чаты"
+                    const allChatsIcon = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>`;
+
+                    allChatsBtn.innerHTML = `
+                        <div class="folder-icon">${allChatsIcon}</div>
+                        <div class="folder-label">Все чаты</div>
+                    `;
+
+                    // Клик по "Все чаты"
+                    allChatsBtn.onclick = () => {
+                        document.querySelectorAll('.folder-item').forEach(el => el.classList.remove('active'));
+                        allChatsBtn.classList.add('active');
+                        window.currentFolderId = 'all';
+                        pollChatsList(); // Мгновенно загружаем все чаты
+                    };
+
+                    container.appendChild(allChatsBtn);
+
+                    // 3. ДОБАВЛЯЕМ КАСТОМНЫЕ ПАПКИ ИЗ БАЗЫ
                     data.folders.forEach(f => {
                         const item = document.createElement('div');
                         item.className = `folder-item ${window.currentFolderId == f.id ? 'active' : ''}`;
@@ -277,12 +311,12 @@ function setFavicon(url) {
                             <div class="folder-label">${f.name}</div>
                         `;
 
-                        // Клик по папке
+                        // Клик по кастомной папке
                         item.onclick = () => {
                             document.querySelectorAll('.folder-item').forEach(el => el.classList.remove('active'));
                             item.classList.add('active');
                             window.currentFolderId = f.id;
-                            pollChatsList(); // Мгновенно обновляем чаты в этой папке
+                            pollChatsList(); // Загружаем чаты только для этой папки
                         };
                         container.appendChild(item);
                     });
@@ -907,5 +941,90 @@ function setFavicon(url) {
     // Чтобы само меню не закрывалось при клике на свои пункты раньше времени
     ctxMenu.addEventListener('click', (e) => {
         e.stopPropagation();
+    });
+
+    // =========================================
+    // ПАПКИ: ОТКРЫТИЕ, ВЫБОР ЦВЕТА И СОХРАНЕНИЕ
+    // =========================================
+
+    const folderModal = document.getElementById('folderModal');
+    let selectedFolderColor = '#3b82f6'; // По умолчанию синий
+
+    // 1. Открытие модалки папок
+    document.getElementById('openFoldersBtn')?.addEventListener('click', () => {
+        document.getElementById('settingsSidebar').classList.remove('active');
+        document.getElementById('settingsOverlay').classList.remove('active');
+        folderModal.classList.add('active');
+
+        // Подгружаем чаты
+        const list = document.getElementById('chatsSelectionList');
+        list.innerHTML = '<div style="padding:20px; text-align:center; color:gray;">Загрузка чатов...</div>';
+
+        // Используем существующий эндпоинт, который мы делали для списка (или создай /api/get-all-chats/ в views)
+        fetch('/api/get-all-chats/')
+            .then(res => res.json())
+            .then(data => {
+                list.innerHTML = '';
+                data.chats.forEach(chat => {
+                    const item = document.createElement('div');
+                    item.className = 'chat-select-item';
+                    item.innerHTML = `
+                        <input type="checkbox" value="${chat.id}" class="folder-chat-checkbox">
+                        <span class="chat-select-name">${chat.name}</span>
+                    `;
+                    // Кликом по всей строке переключаем чекбокс
+                    item.onclick = (e) => {
+                        if(e.target.tagName !== 'INPUT') {
+                            const cb = item.querySelector('input');
+                            cb.checked = !cb.checked;
+                        }
+                    };
+                    list.appendChild(item);
+                });
+            });
+    });
+
+    // 2. Выбор цвета
+    document.querySelectorAll('.color-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            selectedFolderColor = opt.getAttribute('data-color');
+        });
+    });
+
+    // 3. Закрытие модалки
+    document.getElementById('closeFolderModal')?.addEventListener('click', () => folderModal.classList.remove('active'));
+    document.getElementById('cancelFolder')?.addEventListener('click', () => folderModal.classList.remove('active'));
+
+    // 4. Сохранение папки
+    document.getElementById('saveFolderBtn')?.addEventListener('click', () => {
+        const name = document.getElementById('folderNameInput').value.trim();
+        const selected = Array.from(document.querySelectorAll('.folder-chat-checkbox:checked')).map(cb => cb.value);
+
+        if (!name) return alert('Введите название папки!');
+
+        const fd = new FormData();
+        fd.append('name', name);
+        fd.append('color', selectedFolderColor); // Передаем цвет!
+        selected.forEach(id => fd.append('chat_ids[]', id));
+
+        fetch('/api/create-folder/', {
+            method: 'POST',
+            body: fd,
+            headers: { 'X-CSRFToken': getCSRF() }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                folderModal.classList.remove('active');
+                document.getElementById('folderNameInput').value = '';
+                // Сбрасываем цвет на дефолтный
+                document.querySelectorAll('.color-option')[0].click();
+
+                // Мгновенно обновляем сайдбар папок
+                if (typeof pollFoldersList === 'function') pollFoldersList();
+            }
+        });
     });
 });

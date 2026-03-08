@@ -1914,3 +1914,48 @@ html { font-size: 17px; }
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.folder-settings-content { width: 400px !important; }
+
+.color-picker-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.color-option {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
+}
+
+.color-option:hover { transform: scale(1.1); }
+.color-option.active {
+    border-color: white;
+    box-shadow: 0 0 8px rgba(255,255,255,0.5);
+    transform: scale(1.1);
+}
+
+.chats-selection-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.chat-select-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    gap: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.chat-select-item:hover { background: rgba(255, 255, 255, 0.05); }
+.chat-select-item input { width: 18px; height: 18px; cursor: pointer; }
+.chat-select-name { font-size: 0.95rem; color: #fff; }

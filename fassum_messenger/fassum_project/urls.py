@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/get-chats-list/', get_chats_list, name='get_chats_list'),
     path('api/get-folders-list/', get_folders_list, name='get_folders_list'),
     path('api/create-folder/', create_folder, name='create_folder'),
+    path('api/get-all-chats/', get_chats_for_folder_manager, name='get_all_chats'),
 ]
 
 if settings.DEBUG:

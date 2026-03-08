@@ -457,20 +457,50 @@ def get_chats_list(request):
     chats_data.sort(key=lambda x: x['timestamp'], reverse=True)
     return JsonResponse({'status': 'ok', 'chats': chats_data})
 
-
-@login_required
-def get_folders_list(request):
-    folders = request.user.folders.all()
-    data = [{'id': f.id, 'name': f.name, 'icon': f.icon or '📁'} for f in folders]
-    return JsonResponse({'status': 'ok', 'folders': data})
-
-
 @login_required
 def create_folder(request):
     if request.method == 'POST':
         name = request.POST.get('name')
-        folder = Folder.objects.create(user=request.user, name=name)
-        chat_ids = request.POST.getlist('chat_ids[]')  # Используем [] для массивов из JS
+        color = request.POST.get('color', '#3b82f6')  # Получаем цвет
+        chat_ids = request.POST.getlist('chat_ids[]')
+
+        if not name:
+            return JsonResponse({'status': 'error', 'message': 'Название обязательно'})
+
+        # Создаем папку с цветом
+        folder = Folder.objects.create(user=request.user, name=name, color=color)
+
         if chat_ids:
             folder.chats.add(*chat_ids)
+
         return JsonResponse({'status': 'ok', 'folder_id': folder.id})
+
+
+# И заодно обновим выдачу папок, чтобы она отдавала цвет и SVG
+@login_required
+def get_folders_list(request):
+    folders = request.user.folders.all()
+    data = []
+    for f in folders:
+        # Генерируем SVG прямо здесь с нужным цветом
+        svg_icon = f'''<svg viewBox="0 0 24 24" width="22" height="22" fill="{f.color}"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"></path></svg>'''
+        data.append({'id': f.id, 'name': f.name, 'icon': svg_icon})
+
+    return JsonResponse({'status': 'ok', 'folders': data})
+
+
+@login_required
+def get_chats_for_folder_manager(request):
+    """Отдает список всех чатов для модалки создания папки (с галочками)"""
+    user_chats = request.user.chats.all()
+    chats_data = []
+
+    for chat in user_chats:
+        other_user = chat.participants.exclude(id=request.user.id).first()
+        if other_user:
+            chats_data.append({
+                'id': chat.id,
+                'name': other_user.first_name or other_user.username,
+            })
+
+    return JsonResponse({'status': 'ok', 'chats': chats_data})

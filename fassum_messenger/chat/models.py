@@ -35,15 +35,14 @@ class MessageImage(models.Model):
 
 # Модель Папки
 class Folder(models.Model):
-    # Владелец папки
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='folders')
-    # Название папки (например, "Работа", "Личное")
     name = models.CharField(max_length=50)
-    # Чаты, которые лежат в этой папке (может быть пустой)
-    chats = models.ManyToManyField(Chat, related_name='folders', blank=True)
+    # ДОБАВЛЯЕМ ПОЛЕ ДЛЯ ЦВЕТА (по умолчанию синий)
+    color = models.CharField(max_length=20, default="#3b82f6")
+    chats = models.ManyToManyField(Chat, blank=True)
 
     def __str__(self):
-        return f"Папка: {self.name} ({self.user.username})"
+        return self.name
 
 # ЕДИНСТВЕННАЯ И ПРАВИЛЬНАЯ МОДЕЛЬ ПРОФИЛЯ
 class Profile(models.Model):
