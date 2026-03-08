@@ -19,6 +19,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. ОТРИСОВКА СООБЩЕНИЙ И СТАТУСА
     // =========================================
 
+    // Функция для жесткого обновления фавиконки
+function setFavicon(url) {
+    let oldLink = document.getElementById('app-favicon');
+    if (oldLink) {
+        document.head.removeChild(oldLink); // Удаляем старую иконку
+    }
+    
+    let newLink = document.createElement('link');
+    newLink.id = 'app-favicon';
+    newLink.rel = 'icon';
+    newLink.type = 'image/svg+xml'; // Обязательно указываем, что это SVG
+    // Добавляем параметр со временем, чтобы сбить кэш браузера
+    newLink.href = url + '?v=' + new Date().getTime(); 
+    
+    document.head.appendChild(newLink); // Вставляем новую
+}
+
+
     const updateChatStatus = (statusText, isTyping = false) => {
         const statusEl = document.querySelector('.chat-header .status');
         if (!statusEl) return;
@@ -93,12 +111,24 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(`/api/messages/${window.currentChatId}/?last_id=${window.lastMsgId}`)
             .then(res => res.json())
             .then(data => {
+                .then(data => {
                 if (data.status === 'ok') {
                     if (data.messages.length > 0) {
                         data.messages.forEach(msg => renderMessage(msg));
-                    }
+                        
+                        // НОВАЯ ЛОГИКА: Если вкладка неактивна, включаем уведомление
+                        if (document.visibilityState === 'hidden') {
+                            // ИСПОЛЬЗУЕМ НАШУ ФУНКЦИЮ
+                            setFavicon('/static/images/favicon_alert.svg');
+                            
+                            document.title = '(1) Новое сообщение - Fassum';
 
-                    if (data.read_ids && data.read_ids.length > 0) {
+                            const sound = document.getElementById('notificationSound');
+                            if (sound) {
+                                sound.play().catch(err => console.log("Звук заблокирован:", err));
+                            }
+                        }
+                    // ... остальной код (read_ids, status_text) остается без изменений                    if (data.read_ids && data.read_ids.length > 0) {
                         data.read_ids.forEach(id => {
                             const msgEl = document.querySelector(`.message.outgoing[data-id="${id}"]`);
                             if (msgEl) {
@@ -551,19 +581,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- НОВАЯ МАГИЯ: МГНОВЕННЫЙ ОНЛАЙН ПРИ ВОЗВРАЩЕНИИ ---
 
-    // 1. Когда пользователь возвращается на вкладку браузера
+    // Когда пользователь возвращается на вкладку браузера
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
             resetActivity();
-            sendPing(); // Мгновенно говорим серверу "Я тут!"
-
-            // Заодно сразу дергаем сообщения, чтобы обновить статус собеседника без ожидания
+            sendPing(); 
+            
+            // ИСПОЛЬЗУЕМ НАШУ ФУНКЦИЮ ДЛЯ СБРОСА
+            setFavicon('/static/images/favicon.svg');
+            document.title = 'Fassum Web'; 
+            
             if (window.currentChatId) {
                 checkNewMessages();
             }
         }
     });
-
     // 2. Когда пользователь кликает по окну браузера (если оно было открыто на фоне)
     window.addEventListener('focus', () => {
         resetActivity();

@@ -58,7 +58,7 @@ class Profile(models.Model):
         if self.avatar and hasattr(self.avatar, 'url'):
             return self.avatar.url
         # Если картинки нет, отдаем нашу статику
-        return static('images/default_avatar.jpg')
+        return "/media/avatars/default_avatar.jpg"
 
     # Метод, который проверяет, был ли юзер активен
     def is_online(self):
